@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace MenuGenerator.Models.Entities.OccurenceRule;
+namespace MenuGenerator.Models.Entities.OccurenceRule.DependsOn;
 
 public class DependsOnRuleEntityConfiguration : IEntityTypeConfiguration<DependsOnRuleEntity>
 {

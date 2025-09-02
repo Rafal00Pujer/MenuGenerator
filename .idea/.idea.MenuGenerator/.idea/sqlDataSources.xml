@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DdlMappings">
+    <mapping uuid="562f625e-cc74-4ce9-8cbd-89c0a99f95fb" name="MenuGenerator Mapping">
+      <data-sources db="4baa87ef-0849-480b-b1dc-bf3a79c749cc" ddl="3ce799d1-c52f-400c-8b93-2d5165baaaf8" />
+    </mapping>
+  </component>
+</project>

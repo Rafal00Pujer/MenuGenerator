@@ -9,8 +9,17 @@ public class MenuEntityConfiguration : IEntityTypeConfiguration<MenuEntity>
     {
         builder.HasKey(e => e.Date);
 
-        builder
+        var leftNavigation = builder
             .HasMany(e => e.DishList)
-            .WithMany(e => e.MenuList);
+            .WithMany(e => e.MenuList)
+            .LeftNavigation;
+
+        leftNavigation.SetField(MenuEntity.DishListFieldName);
+        leftNavigation.SetPropertyAccessMode(PropertyAccessMode.Field);
+
+        // builder
+        //     .Property(e => e.DishList)
+        //     .HasField(MenuEntity.DishListFieldName)
+        //     .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

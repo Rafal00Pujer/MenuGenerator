@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MenuGenerator.Models.Entities.OccurenceRule;
 
-[EntityTypeConfiguration<OccurenceRuleEntityConfiguration, OccurenceRuleEntity>]
+[EntityTypeConfiguration(typeof(OccurenceRuleEntityConfiguration))]
 public abstract class OccurenceRuleEntity
 {
     public required Guid Id { get; set; } = Guid.CreateVersion7();

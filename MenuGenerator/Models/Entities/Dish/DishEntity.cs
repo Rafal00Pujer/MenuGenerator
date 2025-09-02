@@ -16,6 +16,12 @@ public class DishEntity
 
     public string? Description { get; set; }
 
+    public required bool IncludeInNewMenus { get; set; }
+    
+    public required bool IncludesFirstSupplement { get; set; }
+    
+    public required bool IncludesSecondSupplement { get; set; }
+    
     public required DishType Type { get; set; }
     
     public List<AllergenEntity> AllergenList { get; set; } = [];

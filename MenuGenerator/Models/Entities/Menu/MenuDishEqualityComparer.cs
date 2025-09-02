@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using MenuGenerator.Models.Entities.Dish;
 
 namespace MenuGenerator.Models.Entities.Menu;
 
+[Obsolete("Currently unused.")]
 public class MenuDishEqualityComparer : IEqualityComparer<DishEntity>
 {
     public bool Equals(DishEntity? x, DishEntity? y)

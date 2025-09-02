@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using MenuGenerator.Models.Entities.Menu;
+using Microsoft.EntityFrameworkCore;
 
-namespace MenuGenerator.Models.Entities.OccurenceRule;
+namespace MenuGenerator.Models.Entities.OccurenceRule.CanOccurAfterDays;
 
+[EntityTypeConfiguration(typeof(CanOccurAfterDaysEntityConfiguration))]
 public class CanOccurAfterDaysEntity : OccurenceRuleEntity
 {
     public required int Days { get; set; }

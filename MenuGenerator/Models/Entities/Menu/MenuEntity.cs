@@ -8,7 +8,11 @@ namespace MenuGenerator.Models.Entities.Menu;
 [EntityTypeConfiguration<MenuEntityConfiguration, MenuEntity>]
 public class MenuEntity
 {
+    internal static string DishListFieldName => nameof(_dishList);
+    
+    private List<DishEntity> _dishList = [];
+
     public required DateOnly Date { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 
-    public HashSet<DishEntity> DishList { get; set; } = new(new MenuDishEqualityComparer());
+    public IReadOnlyList<DishEntity> DishList => _dishList.AsReadOnly();
 }
