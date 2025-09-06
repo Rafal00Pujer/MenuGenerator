@@ -15,7 +15,7 @@ public class OccurenceRuleEntityConfiguration : IEntityTypeConfiguration<Occuren
             .HasOne(e => e.Dish)
             .WithMany(e => e.OccurenceRuleList)
             .HasForeignKey(e => e.DishId)
-            .IsRequired(true)
+            .IsRequired()
             .OnDelete(DeleteBehavior.NoAction);
     }
 }

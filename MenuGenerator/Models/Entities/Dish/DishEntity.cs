@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using MenuGenerator.Models.Entities.Allergen;
+using MenuGenerator.Models.Entities.DishAttribute;
+using MenuGenerator.Models.Entities.DishType;
 using MenuGenerator.Models.Entities.Menu;
 using MenuGenerator.Models.Entities.OccurenceRule;
 using Microsoft.EntityFrameworkCore;
@@ -18,11 +20,11 @@ public class DishEntity
 
     public required bool IncludeInNewMenus { get; set; }
     
-    public required bool IncludesFirstSupplement { get; set; }
+    public required Guid TypeId { get; set; }
     
-    public required bool IncludesSecondSupplement { get; set; }
+    public required DishTypeEntity Type { get; set; } = null!;
     
-    public required DishType Type { get; set; }
+    public List<DishAttributeEntity> AttributeList { get; set; } = [];
     
     public List<AllergenEntity> AllergenList { get; set; } = [];
 

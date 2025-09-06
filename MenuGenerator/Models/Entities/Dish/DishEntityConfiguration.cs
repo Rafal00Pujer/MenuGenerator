@@ -13,12 +13,24 @@ public class DishEntityConfiguration : IEntityTypeConfiguration<DishEntity>
             .Property(e => e.Name)
             .HasSentinel(string.Empty)
             .HasMaxLength(50)
-            .IsRequired(true);
+            .IsRequired();
 
         builder
             .Property(e => e.Description)
             .HasMaxLength(500)
             .IsRequired(false);
+
+        builder
+            .HasOne(e => e.Type)
+            .WithMany(e => e.DishList)
+            .HasForeignKey(e => e.TypeId)
+            .HasPrincipalKey(e => e.Id)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.NoAction);
+
+        builder
+            .HasMany(e => e.AttributeList)
+            .WithMany(e => e.DishList);
 
         builder
             .HasMany(e => e.AllergenList)
