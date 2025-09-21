@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace MenuGenerator.Views;
+namespace MenuGenerator.ViewModel.MainWindow;
 
 public partial class MainWindow : Window
 {

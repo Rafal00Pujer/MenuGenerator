@@ -19,13 +19,13 @@ public class DishEntity
     public string? Description { get; set; }
 
     public required bool IncludeInNewMenus { get; set; }
-    
+
     public required Guid TypeId { get; set; }
-    
+
     public required DishTypeEntity Type { get; set; } = null!;
-    
+
     public List<DishAttributeEntity> AttributeList { get; set; } = [];
-    
+
     public List<AllergenEntity> AllergenList { get; set; } = [];
 
     public List<MenuEntity> MenuList { get; set; } = [];

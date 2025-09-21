@@ -8,9 +8,8 @@ namespace MenuGenerator.Models.Entities.Menu;
 [EntityTypeConfiguration<MenuEntityConfiguration, MenuEntity>]
 public class MenuEntity
 {
+    private readonly List<DishEntity> _dishList = [];
     internal static string DishListFieldName => nameof(_dishList);
-    
-    private List<DishEntity> _dishList = [];
 
     public required DateOnly Date { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 

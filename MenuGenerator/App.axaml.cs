@@ -1,21 +1,25 @@
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
-using System.Linq;
 using Avalonia.Markup.Xaml;
+using CommunityToolkit.Mvvm.Messaging;
+using HanumanInstitute.MvvmDialogs;
+using HanumanInstitute.MvvmDialogs.Avalonia;
+using HanumanInstitute.MvvmDialogs.Avalonia.MessageBox;
 using MenuGenerator.Models.Database;
-using MenuGenerator.ViewModels;
-using MenuGenerator.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MainWindow = MenuGenerator.ViewModel.MainWindow.MainWindow;
+using MainWindowViewModel = MenuGenerator.ViewModel.MainWindow.MainWindowViewModel;
 
 namespace MenuGenerator;
 
-public partial class App : Application
+public class App : Application
 {
-    private ServiceProvider _serviceProvider = null!;
     private IConfigurationRoot _configurationRoot = null!;
+    private ServiceProvider _serviceProvider = null!;
 
     public override void Initialize()
     {
@@ -26,7 +30,7 @@ public partial class App : Application
     {
         _configurationRoot = BuildConfiguration();
         _serviceProvider = BuildServiceProvider();
-        
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
@@ -35,7 +39,7 @@ public partial class App : Application
 
             desktop.MainWindow = new MainWindow
             {
-                DataContext = _serviceProvider.GetRequiredService<MainWindowViewModel>(),
+                DataContext = _serviceProvider.GetRequiredService<MainWindowViewModel>()
             };
 
             desktop.Exit += OnExit;
@@ -56,10 +60,7 @@ public partial class App : Application
             BindingPlugins.DataValidators.OfType<DataAnnotationsValidationPlugin>().ToArray();
 
         // remove each entry found
-        foreach (var plugin in dataValidationPluginsToRemove)
-        {
-            BindingPlugins.DataValidators.Remove(plugin);
-        }
+        foreach (var plugin in dataValidationPluginsToRemove) BindingPlugins.DataValidators.Remove(plugin);
     }
 
     private ServiceProvider BuildServiceProvider()
@@ -74,6 +75,16 @@ public partial class App : Application
         {
             options.UseSqlite($"Data Source={_configurationRoot.GetConnectionString("sqlitleDbFilePath")}");
         });
+
+        collection.AddSingleton<IDialogService>(x => new DialogService(
+            new DialogManager(
+                new ViewLocatorBase(),
+                new DialogFactory()
+                    .AddMessageBox(MessageBoxMode.Popup)
+                    .AddDialogHost()),
+            x.GetService));
+
+        collection.AddSingleton<IMessenger, WeakReferenceMessenger>();
 
         collection.MakeReadOnly();
         return collection.BuildServiceProvider(new ServiceProviderOptions
@@ -90,7 +101,7 @@ public partial class App : Application
         builder.AddJsonFile("appsettings.json");
 
 #if DEVELOPMENT
-        builder.AddJsonFile("appsettings.development.json", optional: true);
+        builder.AddJsonFile("appsettings.development.json", true);
 #endif
 
         return builder.Build();

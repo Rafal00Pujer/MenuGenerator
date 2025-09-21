@@ -11,8 +11,8 @@ public class AllergenEntity
     public required Guid Id { get; set; } = Guid.CreateVersion7();
 
     public required string DisplayId { get; set; } = null!;
-    
+
     public string? Description { get; set; }
-    
+
     public List<DishEntity> DishList { get; set; } = [];
 }

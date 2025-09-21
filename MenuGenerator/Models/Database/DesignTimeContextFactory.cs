@@ -8,9 +8,9 @@ public class DesignTimeContextFactory : IDesignTimeDbContextFactory<MenuGenerato
     public MenuGeneratorContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<MenuGeneratorContext>();
-        optionsBuilder.UseSqlite("Data Source=Models/Database/DevDbFiles/MenuGenerator.db"); 
+        optionsBuilder.UseSqlite("Data Source=Models/Database/DevDbFiles/MenuGenerator.db");
         // ../../../Models/Database/DevDbFiles/
-        
+
         return new MenuGeneratorContext(optionsBuilder.Options);
     }
 }

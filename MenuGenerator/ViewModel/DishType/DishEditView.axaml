@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:MenuGenerator.ViewModel.DishType"
+             xmlns:dishType="clr-namespace:MenuGenerator.ViewModel.DishType"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MenuGenerator.ViewModel.DishType.DishEditView"
+             x:DataType="vm:DishTypeEditViewModel">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <dishType:DishTypeEditDesignViewModel />
+    </Design.DataContext>
+
+    <StackPanel Orientation="Vertical">
+        <TextBlock TextAlignment="Center" FontSize="25" Text="{Binding Title}"
+                   Margin="0,15" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+
+            <!-- Name -->
+            <StackPanel Orientation="Vertical" Margin="10,0,10,0">
+                <Label Content="Name" Target="NameBox" Margin="0,0,0,5" />
+                <TextBox Name="NameBox" Text="{Binding Name}"
+                         Width="200" />
+            </StackPanel>
+
+            <!-- Description -->
+            <StackPanel Orientation="Vertical" Margin="10,0,10,0">
+                <Label Content="Description" Target="DescriptionBox" Margin="0,0,0,5" />
+                <TextBox Name="DescriptionBox" Text="{Binding Description}"
+                         Height="100" Width="300" AcceptsReturn="True" TextWrapping="Wrap" />
+            </StackPanel>
+
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="15,15">
+            <Button Content="Add New" Background="{StaticResource AccentButtonBackground}" Margin="5,0"
+                    IsVisible="{Binding IsNew}" Command="{Binding AddCommand}" />
+
+            <Button Content="Cancel" Background="{StaticResource SystemControlErrorTextForegroundBrush}" Margin="5,0"
+                    IsVisible="{Binding !IsNew}" Command="{Binding CancelCommand}" />
+
+            <Button Content="Save" Background="{StaticResource AccentButtonBackground}" Margin="5,0"
+                    IsVisible="{Binding !IsNew}" Command="{Binding SaveCommand}" />
+
+            <Button Content="Delete" Background="{StaticResource SystemControlErrorTextForegroundBrush}" Margin="15,0"
+                    IsVisible="{Binding !IsNew}" Command="{Binding DeleteCommand}" />
+        </StackPanel>
+
+    </StackPanel>
+
+</UserControl>

@@ -1,0 +1,38 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mainWindow="clr-namespace:MenuGenerator.ViewModel.MainWindow"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="MenuGenerator.ViewModel.MainWindow.MainWindow"
+        x:DataType="mainWindow:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="MenuGenerator">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <mainWindow:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto, *">
+
+        <TabStrip Grid.Row="0" ItemsSource="{Binding Buttons}" SelectedItem="{Binding SelectedButton}"
+                  BorderBrush="{StaticResource SystemControlForegroundAccentBrush}" BorderThickness="0,0,0,2"
+                  Padding="5,5,5,10">
+
+            <TabStrip.ItemTemplate>
+                <DataTemplate>
+
+                    <TextBlock Text="{Binding}" />
+
+                </DataTemplate>
+            </TabStrip.ItemTemplate>
+
+        </TabStrip>
+
+        <TransitioningContentControl Grid.Row="1" Content="{Binding SelectedButton}" />
+
+    </Grid>
+
+</Window>

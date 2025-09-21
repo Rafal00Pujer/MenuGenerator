@@ -16,7 +16,7 @@ public abstract class OccurenceRuleEntity
     public required DishEntity Dish { get; set; } = null!;
 
     public abstract bool IsSatisfied(
-        IEnumerable<MenuEntity> previousMonthMenus, 
+        IEnumerable<MenuEntity> previousMonthMenus,
         IEnumerable<MenuEntity> proposedMenus,
         MenuEntity currentGeneratedMenu);
 }
