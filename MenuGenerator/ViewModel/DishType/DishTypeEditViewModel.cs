@@ -90,6 +90,8 @@ public partial class DishTypeEditViewModel(
         Name = newDishTypeEntry.Entity.Name;
         Description = newDishTypeEntry.Entity.Description;
 
+        messenger.Send(new DishTypeAddedMessage(newDishType));
+        
         _ = await dialogService.ShowMessageBoxAsync(
             this,
             "New dish type successfully added.",
@@ -125,12 +127,20 @@ public partial class DishTypeEditViewModel(
     {
         IsProcessing = true;
 
-        await context.DishTypes
-            .Where(x => x.Id == _id)
-            .ExecuteUpdateAsync(x => x
-                .SetProperty(y => y.Name, Name)
-                .SetProperty(y => y.Description, Description));
+        var updatedDishType = await context.DishTypes.FindAsync(_id);
 
+        if (updatedDishType is null)
+        {
+            throw new InvalidOperationException("Dish type not found.");
+        }
+
+        updatedDishType.Name = Name!;
+        updatedDishType.Description = Description;
+        
+        await context.SaveChangesAsync();
+
+        messenger.Send(new DishTypeEditedMessage(updatedDishType));
+        
         _ = await dialogService.ShowMessageBoxAsync(
             this,
             "Changes to dish type saved successfully.",
@@ -165,30 +175,29 @@ public partial class DishTypeEditViewModel(
             return;
         }
 
-        await context.DishTypes
-            .Where(x => x.Id == _id)
-            .ExecuteDeleteAsync();
+        var deletedDishType = await context.DishTypes.FindAsync(_id);
 
+        if (deletedDishType is null)
+        {
+            throw new InvalidOperationException("Dish type not found.");
+        }
+
+        context.DishTypes.Remove(deletedDishType);
+        await context.SaveChangesAsync();
+
+        _id = Guid.Empty;
+        Name = null;
+        Description = null;
+        
+        messenger.Send(new DishTypeDeletedMessage(deletedDishType));
+        
         _ = await dialogService.ShowMessageBoxAsync(
             this,
             "Dish type deleted successfully.",
             "Delete Dish Type",
             MessageBoxButton.Ok,
             MessageBoxImage.Information);
-
-        var deletedDishType = new DishTypeEntity
-        {
-            Id = _id,
-            Name = Name!,
-            Description = Description
-        };
-
-        _id = Guid.Empty;
-        Name = null;
-        Description = null;
-
+        
         IsProcessing = false;
-
-        messenger.Send(new DishTypeDeletedMessage(deletedDishType));
     }
 }
