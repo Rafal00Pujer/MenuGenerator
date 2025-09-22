@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:MenuGenerator.ViewModel.DishType"
+             xmlns:dishType="clr-namespace:MenuGenerator.ViewModel.DishType"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MenuGenerator.ViewModel.DishType.DishTypeView"
+             x:DataType="vm:DishTypeViewModel">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <dishType:DishTypeDesignViewModel />
+    </Design.DataContext>
+
+    <DockPanel>
+        
+        <ContentControl Content="{Binding SelectedDishType}" />
+
+        <Menu DockPanel.Dock="Left">
+            
+        </Menu>
+        
+        <ScrollViewer>
+            <WrapPanel Name="DishSummariesPanel">
+                
+            </WrapPanel>
+        </ScrollViewer>
+        
+        <ListBox ItemsSource="{Binding DishTypeSummaries}">
+            
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+
+                    <Border BorderBrush="{StaticResource SystemControlForegroundAccentBrush}" BorderThickness="1"
+                            CornerRadius="5">
+                        <TextBlock Text="{Binding}" HorizontalAlignment="Center"
+                                   TextAlignment="Center"
+                                   Width="50" Height="50" />
+                    </Border>
+
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+
+            <ListBox.Styles>
+                <Style Selector="ListBoxItem">
+                    <Setter Property="Margin" Value="5" />
+                </Style>
+            </ListBox.Styles>
+
+        </ListBox>
+
+    </DockPanel>
+
+</UserControl>

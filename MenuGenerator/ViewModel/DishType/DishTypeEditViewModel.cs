@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -9,10 +8,11 @@ using HanumanInstitute.MvvmDialogs;
 using HanumanInstitute.MvvmDialogs.FrameworkDialogs;
 using MenuGenerator.Models.Database;
 using MenuGenerator.Models.Entities.DishType;
-using Microsoft.EntityFrameworkCore;
+using MenuGenerator.ViewLocator;
 
 namespace MenuGenerator.ViewModel.DishType;
 
+[View(typeof(DishTypeEditView))]
 public partial class DishTypeEditViewModel(
     MenuGeneratorContext context,
     IDialogService dialogService,

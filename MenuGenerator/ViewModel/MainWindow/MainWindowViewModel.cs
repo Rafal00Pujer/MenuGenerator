@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
+using MenuGenerator.ViewLocator;
 
 namespace MenuGenerator.ViewModel.MainWindow;
 
+[View(typeof(MainWindow))]
 public partial class MainWindowViewModel : ViewModelBase
 {
     [ObservableProperty] private string _selectedButton;

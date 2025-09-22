@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace MenuGenerator.ViewModel.DishType;
 
-public partial class DishEditView : UserControl
+public partial class DishTypeEditView : UserControl
 {
-    public DishEditView()
+    public DishTypeEditView()
     {
         InitializeComponent();
     }

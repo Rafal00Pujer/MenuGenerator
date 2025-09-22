@@ -5,7 +5,7 @@
              xmlns:vm="clr-namespace:MenuGenerator.ViewModel.DishType"
              xmlns:dishType="clr-namespace:MenuGenerator.ViewModel.DishType"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="MenuGenerator.ViewModel.DishType.DishEditView"
+             x:Class="MenuGenerator.ViewModel.DishType.DishTypeEditView"
              x:DataType="vm:DishTypeEditViewModel">
 
     <Design.DataContext>
