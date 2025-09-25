@@ -37,16 +37,16 @@
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="15,15">
-            <Button Content="Add New" Background="{StaticResource AccentButtonBackground}" Margin="5,0"
+            <Button Content="Add New" Margin="5,0"
                     IsVisible="{Binding IsNew}" Command="{Binding AddCommand}" />
 
-            <Button Content="Cancel" Background="{StaticResource SystemControlErrorTextForegroundBrush}" Margin="5,0"
+            <Button Content="Cancel" Margin="5,0"
                     IsVisible="{Binding !IsNew}" Command="{Binding CancelCommand}" />
 
-            <Button Content="Save" Background="{StaticResource AccentButtonBackground}" Margin="5,0"
+            <Button Content="Save" Margin="5,0"
                     IsVisible="{Binding !IsNew}" Command="{Binding SaveCommand}" />
 
-            <Button Content="Delete" Background="{StaticResource SystemControlErrorTextForegroundBrush}" Margin="15,0"
+            <Button Content="Delete" Margin="15,0"
                     IsVisible="{Binding !IsNew}" Command="{Binding DeleteCommand}" />
         </StackPanel>
 

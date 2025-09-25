@@ -25,7 +25,7 @@ public partial class DishTypeEditViewModel(
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     private string? _description;
 
-    private Guid _id = Guid.Empty;
+    protected Guid _id = Guid.Empty;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AddCommand))]
@@ -46,7 +46,7 @@ public partial class DishTypeEditViewModel(
 
     public string Title => IsNew ? "New Dish Type" : "Edit Dish Type";
 
-    private async ValueTask LoadAsync(Guid id)
+    public async ValueTask LoadAsync(Guid id)
     {
         IsProcessing = true;
 
@@ -59,6 +59,13 @@ public partial class DishTypeEditViewModel(
         Description = dishType.Description;
 
         IsProcessing = false;
+    }
+
+    public void Clear()
+    {
+        _id = Guid.Empty;
+        Name = null;
+        Description = null;
     }
 
     private bool CanAdd()
