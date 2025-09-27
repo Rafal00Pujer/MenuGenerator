@@ -1,6 +1,10 @@
-using CommunityToolkit.Mvvm.Messaging.Messages;
+using System;
 using MenuGenerator.Models.Entities.DishType;
 
 namespace MenuGenerator.ViewModel.DishType;
 
-public class DishTypeDeletedMessage(DishTypeEntity value) : ValueChangedMessage<DishTypeEntity>(value);
+public record DishTypeDeletedMessage(Guid Id, string Name, string? Description)
+{
+    public static DishTypeDeletedMessage CreateFromEntity(DishTypeEntity entity) =>
+        new(entity.Id, entity.Name, entity.Description);
+}

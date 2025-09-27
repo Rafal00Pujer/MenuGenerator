@@ -126,7 +126,7 @@ public partial class DishTypeEditViewModel : ViewModelBase
 
         UpdateIsNewAndTitle();
 
-        _messenger.Send(new DishTypeAddedMessage(newDishType));
+        _messenger.Send(DishTypeAddedMessage.CreateFromEntity(newDishType));
 
         _ = await _dialogService.ShowMessageBoxAsync(
             null,
@@ -183,7 +183,7 @@ public partial class DishTypeEditViewModel : ViewModelBase
 
         await _context.SaveChangesAsync();
 
-        _messenger.Send(new DishTypeEditedMessage(updatedDishType));
+        _messenger.Send(DishTypeEditedMessage.CreateFromEntity(updatedDishType));
 
         _ = await _dialogService.ShowMessageBoxAsync(
             null,
@@ -232,7 +232,7 @@ public partial class DishTypeEditViewModel : ViewModelBase
 
         UpdateIsNewAndTitle();
 
-        _messenger.Send(new DishTypeDeletedMessage(deletedDishType));
+        _messenger.Send(DishTypeDeletedMessage.CreateFromEntity(deletedDishType));
 
         _ = await _dialogService.ShowMessageBoxAsync(
             null,

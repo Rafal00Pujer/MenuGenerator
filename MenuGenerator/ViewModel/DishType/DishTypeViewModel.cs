@@ -90,18 +90,14 @@ public partial class DishTypeViewModel :
 
     public void Receive(DishTypeAddedMessage message)
     {
-        var addedDishType = message.Value;
-
-        var addedDishTypeSummary = new DishTypeSummary(addedDishType.Id, addedDishType.Name);
+        var addedDishTypeSummary = new DishTypeSummary(message.Id, message.Name);
 
         DishTypeSummaries.Add(addedDishTypeSummary);
     }
 
     public void Receive(DishTypeDeletedMessage message)
     {
-        var deletedDishType = message.Value;
-
-        var deletedDishTypeSummary = DishTypeSummaries.FirstOrDefault(x => x.Id == deletedDishType.Id);
+        var deletedDishTypeSummary = DishTypeSummaries.FirstOrDefault(x => x.Id == message.Id);
 
         if (deletedDishTypeSummary is null) throw new InvalidOperationException("Dish Type not found!");
 
@@ -110,9 +106,7 @@ public partial class DishTypeViewModel :
 
     public void Receive(DishTypeEditedMessage message)
     {
-        var editedDishType = message.Value;
-
-        var editedDishTypeSummary = DishTypeSummaries.FirstOrDefault(x => x.Id == editedDishType.Id);
+        var editedDishTypeSummary = DishTypeSummaries.FirstOrDefault(x => x.Id == message.Id);
 
         if (editedDishTypeSummary is null) throw new InvalidOperationException("Dish Type not found!");
 
@@ -121,7 +115,7 @@ public partial class DishTypeViewModel :
 
         editedDishTypeSummary = editedDishTypeSummary with
         {
-            Name = editedDishType.Name
+            Name = message.Name
         };
 
         DishTypeSummaries.Add(editedDishTypeSummary);
