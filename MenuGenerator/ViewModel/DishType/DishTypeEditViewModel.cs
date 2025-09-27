@@ -9,63 +9,83 @@ using HanumanInstitute.MvvmDialogs.FrameworkDialogs;
 using MenuGenerator.Models.Database;
 using MenuGenerator.Models.Entities.DishType;
 using MenuGenerator.ViewLocator;
+using Microsoft.EntityFrameworkCore;
 
 namespace MenuGenerator.ViewModel.DishType;
 
 [View(typeof(DishTypeEditView))]
-public partial class DishTypeEditViewModel(
-    MenuGeneratorContext context,
-    IDialogService dialogService,
-    IMessenger messenger) : ViewModelBase
+public partial class DishTypeEditViewModel : ViewModelBase
 {
+    private readonly MenuGeneratorContext _context;
+    private readonly IDialogService _dialogService;
+    private readonly IMessenger _messenger;
+
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [MaxLength(500)]
-    [NotifyCanExecuteChangedFor(nameof(AddCommand))]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AddCommand), nameof(SaveCommand))]
     private string? _description;
 
-    protected Guid _id = Guid.Empty;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(AddCommand), nameof(SaveCommand), nameof(CancelCommand), nameof(DeleteCommand))]
+    private bool _isNew;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(AddCommand))]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-    [NotifyCanExecuteChangedFor(nameof(CancelCommand))]
-    [NotifyCanExecuteChangedFor(nameof(DeleteCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AddCommand), nameof(SaveCommand), nameof(CancelCommand), nameof(DeleteCommand))]
     private bool _isProcessing;
 
     [ObservableProperty]
     [NotifyDataErrorInfo]
     [Required]
     [Length(3, 50)]
-    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
-    [NotifyCanExecuteChangedFor(nameof(AddCommand))]
+    [NotifyCanExecuteChangedFor(nameof(AddCommand), nameof(SaveCommand))]
     private string? _name;
 
-    public bool IsNew => _id == Guid.Empty;
+    [ObservableProperty] private string _title = null!;
 
-    public string Title => IsNew ? "New Dish Type" : "Edit Dish Type";
+    protected Guid Id = Guid.Empty;
+
+    public DishTypeEditViewModel(MenuGeneratorContext context,
+        IDialogService dialogService,
+        IMessenger messenger)
+    {
+        _context = context;
+        _dialogService = dialogService;
+        _messenger = messenger;
+
+        UpdateIsNewAndTitle();
+    }
 
     public async ValueTask LoadAsync(Guid id)
     {
         IsProcessing = true;
 
-        var dishType = await context.DishTypes.FindAsync(id);
+        var dishType = await _context.DishTypes.FindAsync(id);
 
         if (dishType is null) throw new InvalidOperationException("Dish type not found.");
 
-        _id = dishType.Id;
+        Id = dishType.Id;
         Name = dishType.Name;
         Description = dishType.Description;
+
+        UpdateIsNewAndTitle();
 
         IsProcessing = false;
     }
 
     public void Clear()
     {
-        _id = Guid.Empty;
+        Id = Guid.Empty;
         Name = null;
         Description = null;
+
+        UpdateIsNewAndTitle();
+    }
+
+    private void UpdateIsNewAndTitle()
+    {
+        IsNew = Id == Guid.Empty;
+        Title = IsNew ? "Add New Dish Type" : "Edit " + Name;
     }
 
     private bool CanAdd()
@@ -82,6 +102,13 @@ public partial class DishTypeEditViewModel(
     {
         IsProcessing = true;
 
+        if (await ShowMessageIfNameAlreadyExists())
+        {
+            IsProcessing = false;
+
+            return;
+        }
+
         var newDishType = new DishTypeEntity
         {
             Id = Guid.CreateVersion7(),
@@ -89,18 +116,20 @@ public partial class DishTypeEditViewModel(
             Description = Description
         };
 
-        var newDishTypeEntry = await context.DishTypes.AddAsync(newDishType);
+        var newDishTypeEntry = await _context.DishTypes.AddAsync(newDishType);
 
-        await context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
 
-        _id = newDishTypeEntry.Entity.Id;
+        Id = newDishTypeEntry.Entity.Id;
         Name = newDishTypeEntry.Entity.Name;
         Description = newDishTypeEntry.Entity.Description;
 
-        messenger.Send(new DishTypeAddedMessage(newDishType));
-        
-        _ = await dialogService.ShowMessageBoxAsync(
-            this,
+        UpdateIsNewAndTitle();
+
+        _messenger.Send(new DishTypeAddedMessage(newDishType));
+
+        _ = await _dialogService.ShowMessageBoxAsync(
+            null,
             "New dish type successfully added.",
             "Dish Type Added",
             MessageBoxButton.Ok,
@@ -117,7 +146,7 @@ public partial class DishTypeEditViewModel(
     [RelayCommand(CanExecute = nameof(CanCancel))]
     private async Task Cancel()
     {
-        await LoadAsync(_id);
+        await LoadAsync(Id);
     }
 
     private bool CanSave()
@@ -134,22 +163,30 @@ public partial class DishTypeEditViewModel(
     {
         IsProcessing = true;
 
-        var updatedDishType = await context.DishTypes.FindAsync(_id);
+        var updatedDishType = await _context.DishTypes.FindAsync(Id);
 
-        if (updatedDishType is null)
+        if (updatedDishType is null) throw new InvalidOperationException("Dish type not found.");
+
+        // check if a new name already exists
+        if (updatedDishType.Name != Name
+            && await ShowMessageIfNameAlreadyExists())
         {
-            throw new InvalidOperationException("Dish type not found.");
+            IsProcessing = false;
+
+            return;
         }
 
         updatedDishType.Name = Name!;
         updatedDishType.Description = Description;
-        
-        await context.SaveChangesAsync();
 
-        messenger.Send(new DishTypeEditedMessage(updatedDishType));
-        
-        _ = await dialogService.ShowMessageBoxAsync(
-            this,
+        UpdateIsNewAndTitle();
+
+        await _context.SaveChangesAsync();
+
+        _messenger.Send(new DishTypeEditedMessage(updatedDishType));
+
+        _ = await _dialogService.ShowMessageBoxAsync(
+            null,
             "Changes to dish type saved successfully.",
             "Dish Type Saved",
             MessageBoxButton.Ok,
@@ -168,8 +205,8 @@ public partial class DishTypeEditViewModel(
     {
         IsProcessing = true;
 
-        var userResponse = await dialogService.ShowMessageBoxAsync(
-            this,
+        var userResponse = await _dialogService.ShowMessageBoxAsync(
+            null,
             "Are you sure you want to delete this dish type?",
             "Delete Dish Type",
             MessageBoxButton.YesNo,
@@ -182,29 +219,42 @@ public partial class DishTypeEditViewModel(
             return;
         }
 
-        var deletedDishType = await context.DishTypes.FindAsync(_id);
+        var deletedDishType = await _context.DishTypes.FindAsync(Id);
 
-        if (deletedDishType is null)
-        {
-            throw new InvalidOperationException("Dish type not found.");
-        }
+        if (deletedDishType is null) throw new InvalidOperationException("Dish type not found.");
 
-        context.DishTypes.Remove(deletedDishType);
-        await context.SaveChangesAsync();
+        _context.DishTypes.Remove(deletedDishType);
+        await _context.SaveChangesAsync();
 
-        _id = Guid.Empty;
+        Id = Guid.Empty;
         Name = null;
         Description = null;
-        
-        messenger.Send(new DishTypeDeletedMessage(deletedDishType));
-        
-        _ = await dialogService.ShowMessageBoxAsync(
-            this,
+
+        UpdateIsNewAndTitle();
+
+        _messenger.Send(new DishTypeDeletedMessage(deletedDishType));
+
+        _ = await _dialogService.ShowMessageBoxAsync(
+            null,
             "Dish type deleted successfully.",
             "Delete Dish Type",
             MessageBoxButton.Ok,
             MessageBoxImage.Information);
-        
+
         IsProcessing = false;
+    }
+
+    private async Task<bool> ShowMessageIfNameAlreadyExists()
+    {
+        if (!await _context.DishTypes.AnyAsync(x => x.Name == Name)) return false;
+
+        _ = await _dialogService.ShowMessageBoxAsync(
+            null,
+            $"Dish type with name: \"{Name}\" already exists.",
+            "Dish Type Exists",
+            MessageBoxButton.Ok,
+            MessageBoxImage.Error);
+
+        return true;
     }
 }

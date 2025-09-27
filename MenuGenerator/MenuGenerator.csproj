@@ -6,11 +6,15 @@
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-        <Configurations>Debug;Release;DebugDevelopment</Configurations>
+        <Configurations>Debug;Release;DevelopmentRelease</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)' == 'DebugDevelopment' ">
-        <DefineConstants>TRACE,DEVELOPMENT</DefineConstants>
+    <PropertyGroup Condition=" '$(Configuration)' == 'DevelopmentRelease' ">
+        <Optimize>true</Optimize>
+        <DefineConstants>TRACE;DEVELOPMENT;RELEASE</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <DefineConstants>TRACE;DEVELOPMENT</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>

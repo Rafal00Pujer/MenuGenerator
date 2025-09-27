@@ -10,8 +10,6 @@ public class DishTypeDesignViewModel : DishTypeViewModel
         DishType = new DishTypeEditDesignViewModel(false);
 
         foreach (var i in Enumerable.Range(1, 100))
-        {
             DishTypeSummaries.Add(new DishTypeSummary(Guid.AllBitsSet, $"Dish Type {i}"));
-        }
     }
 }

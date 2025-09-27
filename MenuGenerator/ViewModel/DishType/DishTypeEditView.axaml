@@ -4,9 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:MenuGenerator.ViewModel.DishType"
              xmlns:dishType="clr-namespace:MenuGenerator.ViewModel.DishType"
+             xmlns:controls="clr-namespace:MenuGenerator.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="MenuGenerator.ViewModel.DishType.DishTypeEditView"
-             x:DataType="vm:DishTypeEditViewModel">
+             x:DataType="vm:DishTypeEditViewModel"
+             IsEnabled="{Binding !IsProcessing}">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -23,15 +25,15 @@
             <!-- Name -->
             <StackPanel Orientation="Vertical" Margin="10,0,10,0">
                 <Label Content="Name" Target="NameBox" Margin="0,0,0,5" />
-                <TextBox Name="NameBox" Text="{Binding Name}"
-                         Width="200" />
+                <controls:TestBoxWithTrim Name="NameBox" Text="{Binding Name}"
+                                          Width="200" />
             </StackPanel>
 
             <!-- Description -->
             <StackPanel Orientation="Vertical" Margin="10,0,10,0">
                 <Label Content="Description" Target="DescriptionBox" Margin="0,0,0,5" />
-                <TextBox Name="DescriptionBox" Text="{Binding Description}"
-                         Height="100" Width="300" AcceptsReturn="True" TextWrapping="Wrap" />
+                <controls:TestBoxWithTrim Name="DescriptionBox" Text="{Binding Description}"
+                                          Height="100" Width="300" AcceptsReturn="True" TextWrapping="Wrap" />
             </StackPanel>
 
         </StackPanel>

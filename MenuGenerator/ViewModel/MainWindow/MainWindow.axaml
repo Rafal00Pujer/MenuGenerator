@@ -17,21 +17,23 @@
 
     <Grid RowDefinitions="Auto, *">
 
-        <TabStrip Grid.Row="0" ItemsSource="{Binding Buttons}" SelectedItem="{Binding SelectedButton}"
-                  BorderBrush="{StaticResource SystemControlForegroundAccentBrush}" BorderThickness="0,0,0,2"
-                  Padding="5,5,5,10">
+        <TabStrip Grid.Row="0" ItemsSource="{Binding Tabs}"
+                  SelectedItem="{Binding SelectedTab}"
+                  BorderBrush="{StaticResource SystemControlForegroundAccentBrush}"
+                  BorderThickness="0,0,0,2" Padding="5,5,5,10"
+                  IsEnabled="{Binding !CurrentMainPage.IsProcessing}">
 
             <TabStrip.ItemTemplate>
                 <DataTemplate>
 
-                    <TextBlock Text="{Binding}" />
+                    <TextBlock Text="{Binding Name}" />
 
                 </DataTemplate>
             </TabStrip.ItemTemplate>
 
         </TabStrip>
 
-        <TransitioningContentControl Grid.Row="1" Content="{Binding SelectedButton}" />
+        <TransitioningContentControl Grid.Row="1" Content="{Binding CurrentMainPage}" />
 
     </Grid>
 

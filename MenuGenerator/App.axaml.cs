@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -8,18 +9,18 @@ using HanumanInstitute.MvvmDialogs;
 using HanumanInstitute.MvvmDialogs.Avalonia;
 using HanumanInstitute.MvvmDialogs.Avalonia.MessageBox;
 using MenuGenerator.Models.Database;
+using MenuGenerator.ViewModel.DishType;
+using MenuGenerator.ViewModel.MainWindow;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MainWindow = MenuGenerator.ViewModel.MainWindow.MainWindow;
-using MainWindowViewModel = MenuGenerator.ViewModel.MainWindow.MainWindowViewModel;
 
 namespace MenuGenerator;
 
 public class App : Application
 {
     private IConfigurationRoot _configurationRoot = null!;
-    private ServiceProvider _serviceProvider = null!;
+    private ServiceProvider _serviceProviderRoot = null!;
 
     public override void Initialize()
     {
@@ -29,7 +30,9 @@ public class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         _configurationRoot = BuildConfiguration();
-        _serviceProvider = BuildServiceProvider();
+        _serviceProviderRoot = BuildServiceProvider();
+
+        MigrateDatabase();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -39,7 +42,7 @@ public class App : Application
 
             desktop.MainWindow = new MainWindow
             {
-                DataContext = _serviceProvider.GetRequiredService<MainWindowViewModel>()
+                DataContext = _serviceProviderRoot.GetRequiredService<MainWindowViewModel>()
             };
 
             desktop.Exit += OnExit;
@@ -48,9 +51,18 @@ public class App : Application
         base.OnFrameworkInitializationCompleted();
     }
 
+    [Conditional("RELEASE")]
+    private void MigrateDatabase()
+    {
+        using var scope = _serviceProviderRoot.CreateScope();
+
+        var context = scope.ServiceProvider.GetRequiredService<MenuGeneratorContext>();
+        context.Database.Migrate();
+    }
+
     private void OnExit(object? sender, ControlledApplicationLifetimeExitEventArgs e)
     {
-        _serviceProvider.Dispose();
+        _serviceProviderRoot.Dispose();
     }
 
     private static void DisableAvaloniaDataAnnotationValidation()
@@ -68,8 +80,11 @@ public class App : Application
         var collection = new ServiceCollection();
 
         collection.AddSingleton<IConfiguration>(_configurationRoot);
-
         collection.AddSingleton<MainWindowViewModel>();
+        collection.AddSingleton<IMessenger, WeakReferenceMessenger>();
+
+        collection.AddScoped<DishTypeEditViewModel>();
+        collection.AddScoped<DishTypeViewModel>();
 
         collection.AddDbContext<MenuGeneratorContext>(options =>
         {
@@ -83,8 +98,6 @@ public class App : Application
                     .AddMessageBox(MessageBoxMode.Popup)
                     .AddDialogHost()),
             x.GetService));
-
-        collection.AddSingleton<IMessenger, WeakReferenceMessenger>();
 
         collection.MakeReadOnly();
         return collection.BuildServiceProvider(new ServiceProviderOptions

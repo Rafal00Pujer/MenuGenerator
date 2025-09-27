@@ -6,7 +6,8 @@
              xmlns:dishType="clr-namespace:MenuGenerator.ViewModel.DishType"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="MenuGenerator.ViewModel.DishType.DishTypeView"
-             x:DataType="vm:DishTypeViewModel">
+             x:DataType="vm:DishTypeViewModel"
+             IsEnabled="{Binding !IsProcessing}">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -31,16 +32,17 @@
                     </Style>
                 </StackPanel.Styles>
 
-                <Button Content="Add new" Margin="0,0,0,10"
+                <Button x:Name="AddNewBtn" Content="Add new" Margin="0,0,0,10"
                         Command="{Binding AddNewCommand}" />
 
-                <ScrollViewer VerticalScrollBarVisibility="Visible" Height="400">
-                    <ItemsControl ItemsSource="{Binding DishTypeSummaries}">
+                <ScrollViewer x:Name="DishTypesScroll" VerticalScrollBarVisibility="Visible">
+                    <ItemsControl ItemsSource="{Binding DishTypeSummaries}"
+                                  x:Name="DishTypesList">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
 
                                 <Button Content="{Binding Name}"
-                                        Command="{Binding $parent[UserControl].((vm:DishTypeViewModel)DataContext).SelectCommand}"
+                                        Command="{Binding $parent[vm:DishTypeView].((vm:DishTypeViewModel)DataContext).SelectCommand}"
                                         CommandParameter="{Binding Id}" />
 
                             </DataTemplate>

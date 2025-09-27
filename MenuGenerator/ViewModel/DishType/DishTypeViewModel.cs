@@ -1,12 +1,8 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -22,65 +18,74 @@ public partial class DishTypeViewModel :
     IRecipient<DishTypeAddedMessage>,
     IRecipient<DishTypeEditedMessage>,
     IRecipient<DishTypeDeletedMessage>,
+    IMainPage,
     IDisposable
 {
     private readonly MenuGeneratorContext _context;
     private readonly IMessenger _messenger;
     private readonly IServiceScope _serviceScope;
-    private readonly IServiceProvider _serviceProvider;
+
+    [ObservableProperty] private DishTypeEditViewModel _dishType;
 
     [ObservableProperty] private ObservableCollection<DishTypeSummary> _dishTypeSummaries = [];
-
-    [ObservableProperty] private DishTypeEditViewModel? _dishType;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AddNewCommand))]
     [NotifyCanExecuteChangedFor(nameof(SelectCommand))]
     private bool _isProcessing;
 
-    private bool _selectedDishTypeIsProcessing;
+    private int _isProcessingCounter;
 
-    public DishTypeViewModel(MenuGeneratorContext context, IMessenger messenger, IServiceScopeFactory serviceScope)
+    public DishTypeViewModel(MenuGeneratorContext context, IMessenger messenger,
+        IServiceScopeFactory serviceScopeFactory)
     {
         _context = context;
         _messenger = messenger;
-        _serviceScope = serviceScope.CreateScope();
-        _serviceProvider = _serviceScope.ServiceProvider;
+        _serviceScope = serviceScopeFactory.CreateScope();
 
         _messenger.RegisterAll(this);
+
+        DishType = _serviceScope.ServiceProvider.GetRequiredService<DishTypeEditViewModel>();
+        DishType.PropertyChanged += OnSelectedDishTypeOnPropertyChanged;
     }
 
     /// <summary>
-    /// Design time constructor.
+    ///     Design time constructor.
     /// </summary>
     protected DishTypeViewModel()
     {
         _context = null!;
         _messenger = null!;
         _serviceScope = null!;
-        _serviceProvider = null!;
+        DishType = null!;
     }
 
-    public async Task InitializeAsync()
+    public void Dispose()
     {
-        SetIsProcessingWithSelectedDishType(true);
+        _messenger.UnregisterAll(this);
 
-        if (DishType is null)
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        // Just in case that design view model didn't set dish type
+        if (DishType is not null) DishType.PropertyChanged -= OnSelectedDishTypeOnPropertyChanged;
+
+        _serviceScope.Dispose();
+
+        GC.SuppressFinalize(this);
+    }
+
+    public async Task LoadAsync()
+    {
+        IncrementIsProcessingCounter();
+
+        DishTypeSummaries.Clear();
+
+        await foreach (var dishType in _context.DishTypes)
         {
-            DishType = _serviceProvider.GetRequiredService<DishTypeEditViewModel>();
-            DishType.PropertyChanged += OnSelectedDishTypeOnPropertyChanged;
+            var summary = new DishTypeSummary(dishType.Id, dishType.Name);
+            DishTypeSummaries.Add(summary);
         }
 
-        if (DishTypeSummaries.Count == 0)
-        {
-            await foreach (var dishType in _context.DishTypes)
-            {
-                var summary = new DishTypeSummary(dishType.Id, dishType.Name);
-                DishTypeSummaries.Add(summary);
-            }
-        }
-
-        SetIsProcessingWithSelectedDishType(false);
+        DecrementIsProcessingCounter();
     }
 
     public void Receive(DishTypeAddedMessage message)
@@ -92,16 +97,24 @@ public partial class DishTypeViewModel :
         DishTypeSummaries.Add(addedDishTypeSummary);
     }
 
+    public void Receive(DishTypeDeletedMessage message)
+    {
+        var deletedDishType = message.Value;
+
+        var deletedDishTypeSummary = DishTypeSummaries.FirstOrDefault(x => x.Id == deletedDishType.Id);
+
+        if (deletedDishTypeSummary is null) throw new InvalidOperationException("Dish Type not found!");
+
+        DishTypeSummaries.Remove(deletedDishTypeSummary);
+    }
+
     public void Receive(DishTypeEditedMessage message)
     {
         var editedDishType = message.Value;
 
         var editedDishTypeSummary = DishTypeSummaries.FirstOrDefault(x => x.Id == editedDishType.Id);
 
-        if (editedDishTypeSummary is null)
-        {
-            throw new InvalidOperationException("Dish Type not found!");
-        }
+        if (editedDishTypeSummary is null) throw new InvalidOperationException("Dish Type not found!");
 
         var editedDishTypeSummaryIndex = DishTypeSummaries.IndexOf(editedDishTypeSummary);
         DishTypeSummaries.Remove(editedDishTypeSummary);
@@ -115,78 +128,76 @@ public partial class DishTypeViewModel :
         DishTypeSummaries.Move(DishTypeSummaries.Count - 1, editedDishTypeSummaryIndex);
     }
 
-    public void Receive(DishTypeDeletedMessage message)
+    private bool CanAddNew()
     {
-        var deletedDishType = message.Value;
-
-        var deletedDishTypeSummary = DishTypeSummaries.FirstOrDefault(x => x.Id == deletedDishType.Id);
-
-        if (deletedDishTypeSummary is null)
-        {
-            throw new InvalidOperationException("Dish Type not found!");
-        }
-
-        DishTypeSummaries.Remove(deletedDishTypeSummary);
+        return !IsProcessing;
     }
-
-    private bool CanAddNew() => !IsProcessing;
 
     [RelayCommand(CanExecute = nameof(CanAddNew))]
     private void AddNew()
     {
-        ThrowIfNotInitialized();
+        IncrementIsProcessingCounter();
 
         DishType.Clear();
+
+        DecrementIsProcessingCounter();
     }
 
-    private bool CanSelect() => !IsProcessing;
+    private bool CanSelect()
+    {
+        return !IsProcessing;
+    }
 
     [RelayCommand(CanExecute = nameof(CanSelect))]
     private async Task Select(Guid id)
     {
-        ThrowIfNotInitialized();
+        IncrementIsProcessingCounter();
 
         await DishType.LoadAsync(id);
+
+        DecrementIsProcessingCounter();
     }
 
     private void OnSelectedDishTypeOnPropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
-        if (DishType is null || args.PropertyName != nameof(DishTypeEditViewModel.IsProcessing))
+        if (args.PropertyName != nameof(DishTypeEditViewModel.IsProcessing)) return;
+
+        if (DishType.IsProcessing)
         {
+            IncrementIsProcessingCounter();
             return;
         }
 
-        _selectedDishTypeIsProcessing = DishType.IsProcessing;
-        SetIsProcessingWithSelectedDishType(IsProcessing);
+        DecrementIsProcessingCounter();
     }
 
-    private void SetIsProcessingWithSelectedDishType(bool isProcessing) =>
-        IsProcessing = isProcessing || _selectedDishTypeIsProcessing;
-
-    [MemberNotNull(nameof(DishType))]
-#pragma warning disable MVVMTK0034
-    [MemberNotNull(nameof(_dishType))]
-#pragma warning restore MVVMTK0034
-    private void ThrowIfNotInitialized()
+    private void IncrementIsProcessingCounter()
     {
-        if (DishType is null)
-        {
-            throw new InvalidOperationException("View model is not initialized!");
-        }
+        _isProcessingCounter++;
+        RecalculateIsProcessing();
     }
 
-    public void Dispose()
+    private void DecrementIsProcessingCounter()
     {
-        _messenger.UnregisterAll(this);
+        if (_isProcessingCounter <= 0) throw new InvalidOperationException("_isProcessingCounter can not be negative!");
 
-        if (DishType is not null)
+        _isProcessingCounter--;
+        RecalculateIsProcessing();
+    }
+
+    private void RecalculateIsProcessing()
+    {
+        switch (_isProcessingCounter)
         {
-            DishType.PropertyChanged -= OnSelectedDishTypeOnPropertyChanged;
+            case < 0:
+                throw new InvalidOperationException("_isProcessingCounter is negative!");
+            case > 0:
+                IsProcessing = true;
+                return;
+            default:
+                IsProcessing = false;
+                break;
         }
-
-        _serviceScope.Dispose();
-
-        GC.SuppressFinalize(this);
     }
 
     public record DishTypeSummary(Guid Id, string Name);
