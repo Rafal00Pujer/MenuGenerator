@@ -4,7 +4,7 @@ namespace MenuGenerator.ViewModel;
 
 public interface IMainPage
 {
-    public bool IsProcessing { get; set; }
+	public bool IsProcessing { get; set; }
 
-    public Task LoadAsync();
+	public Task LoadAsync();
 }

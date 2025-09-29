@@ -7,14 +7,14 @@ using CommunityToolkit.Mvvm.Messaging;
 using HanumanInstitute.MvvmDialogs;
 using HanumanInstitute.MvvmDialogs.FrameworkDialogs;
 using MenuGenerator.Models.Database;
-using MenuGenerator.Models.Entities.Allergen;
+using MenuGenerator.Models.Entities.DishAttribute;
 using MenuGenerator.ViewLocator;
 using Microsoft.EntityFrameworkCore;
 
-namespace MenuGenerator.ViewModel.Allergen;
+namespace MenuGenerator.ViewModel.DishAttribute;
 
-[View(typeof(AllergenEditView))]
-public partial class AllergenEditViewModel : ViewModelBase
+[View(typeof(DishAttributeEditView))]
+public partial class DishAttributeEditViewModel : ViewModelBase
 {
 	private readonly MenuGeneratorContext _context;
 	private readonly IDialogService _dialogService;
@@ -22,16 +22,9 @@ public partial class AllergenEditViewModel : ViewModelBase
 
 	[ObservableProperty]
 	[NotifyDataErrorInfo]
-	[MaxLength(50)]
+	[MaxLength(500)]
 	[NotifyCanExecuteChangedFor(nameof(AddCommand), nameof(SaveCommand))]
 	private string? _description;
-
-	[ObservableProperty]
-	[NotifyDataErrorInfo]
-	[Required]
-	[Length(3, 10)]
-	[NotifyCanExecuteChangedFor(nameof(AddCommand), nameof(SaveCommand))]
-	private string? _displayId;
 
 	private Guid _id = Guid.Empty;
 
@@ -44,14 +37,16 @@ public partial class AllergenEditViewModel : ViewModelBase
 	private bool _isProcessing;
 
 	[ObservableProperty]
+	[NotifyDataErrorInfo]
+	[Required]
+	[Length(3, 50)]
+	[NotifyCanExecuteChangedFor(nameof(AddCommand), nameof(SaveCommand))]
+	private string? _name;
+
+	[ObservableProperty]
 	private string _title = null!;
 
-	public AllergenEditViewModel
-	(
-		MenuGeneratorContext context,
-		IDialogService dialogService,
-		IMessenger messenger
-	)
+	public DishAttributeEditViewModel(MenuGeneratorContext context, IDialogService dialogService, IMessenger messenger)
 	{
 		_context = context;
 		_dialogService = dialogService;
@@ -64,13 +59,13 @@ public partial class AllergenEditViewModel : ViewModelBase
 	{
 		IsProcessing = true;
 
-		var allergen = await _context.Allergens.FindAsync(id);
+		var dishAttribute = await _context.DishAttributes.FindAsync(id);
 
-		if (allergen is null) throw new InvalidOperationException("Allergen not found.");
+		if (dishAttribute is null) throw new InvalidOperationException("Dish attribute not found.");
 
-		_id = allergen.Id;
-		DisplayId = allergen.DisplayId;
-		Description = allergen.Description;
+		_id = dishAttribute.Id;
+		Name = dishAttribute.Name;
+		Description = dishAttribute.Description;
 
 		UpdateIsNewAndTitle();
 
@@ -80,7 +75,7 @@ public partial class AllergenEditViewModel : ViewModelBase
 	public void Clear()
 	{
 		_id = Guid.Empty;
-		DisplayId = null;
+		Name = null;
 		Description = null;
 
 		UpdateIsNewAndTitle();
@@ -89,7 +84,7 @@ public partial class AllergenEditViewModel : ViewModelBase
 	private void UpdateIsNewAndTitle()
 	{
 		IsNew = _id == Guid.Empty;
-		Title = IsNew ? "Add New Allergen" : "Edit " + DisplayId;
+		Title = IsNew ? "Add New Dish Attribute" : "Edit " + Name;
 	}
 
 	private bool CanAdd()
@@ -106,36 +101,36 @@ public partial class AllergenEditViewModel : ViewModelBase
 	{
 		IsProcessing = true;
 
-		if (await ShowMessageIfDisplayIdAlreadyExists())
+		if (await CheckAndShowMessageIfNameAlreadyExists())
 		{
 			IsProcessing = false;
 
 			return;
 		}
 
-		var newAllergen = new AllergenEntity
+		var newDishAttribute = new DishAttributeEntity
 		{
-			Id = Guid.CreateVersion7(), DisplayId = DisplayId!, Description = Description
+			Id = Guid.CreateVersion7(), Name = Name!, Description = Description
 		};
 
-		var newAllergenEntry = await _context.Allergens.AddAsync(newAllergen);
-		newAllergen = newAllergenEntry.Entity;
+		var newDishAttributeEntry = await _context.DishAttributes.AddAsync(newDishAttribute);
+		newDishAttribute = newDishAttributeEntry.Entity;
 
 		await _context.SaveChangesAsync();
 
-		_id = newAllergen.Id;
-		DisplayId = newAllergen.DisplayId;
-		Description = newAllergen.Description;
+		_id = newDishAttribute.Id;
+		Name = newDishAttribute.Name;
+		Description = newDishAttribute.Description;
 
 		UpdateIsNewAndTitle();
 
-		_messenger.Send(AllergenAddedMessage.CreateFromEntity(newAllergen));
+		_messenger.Send(DishAttributeAddedMessage.CreateFromEntity(newDishAttribute));
 
 		_ = await _dialogService.ShowMessageBoxAsync
 		(
 			null,
-			"New allergen successfully added.",
-			"Allergen Added",
+			"New dish attribute successfully added.",
+			"Dish Attribute Added",
 			MessageBoxButton.Ok,
 			MessageBoxImage.Information
 		);
@@ -165,33 +160,33 @@ public partial class AllergenEditViewModel : ViewModelBase
 	{
 		IsProcessing = true;
 
-		var updatedAllergen = await _context.Allergens.FindAsync(_id);
+		var updatedDishAttribute = await _context.DishAttributes.FindAsync(_id);
 
-		if (updatedAllergen is null) throw new InvalidOperationException("Allergen not found.");
+		if (updatedDishAttribute is null) throw new InvalidOperationException("Dish attribute not found.");
 
 		// check if a new name already exists
-		if (updatedAllergen.DisplayId != DisplayId
-			&& await ShowMessageIfDisplayIdAlreadyExists())
+		if (updatedDishAttribute.Name != Name
+			&& await CheckAndShowMessageIfNameAlreadyExists())
 		{
 			IsProcessing = false;
 
 			return;
 		}
 
-		updatedAllergen.DisplayId = DisplayId!;
-		updatedAllergen.Description = Description;
+		updatedDishAttribute.Name = Name!;
+		updatedDishAttribute.Description = Description;
 
 		UpdateIsNewAndTitle();
 
 		await _context.SaveChangesAsync();
 
-		_messenger.Send(AllergenEditedMessage.CreateFromEntity(updatedAllergen));
+		_messenger.Send(DishAttributeEditedMessage.CreateFromEntity(updatedDishAttribute));
 
 		_ = await _dialogService.ShowMessageBoxAsync
 		(
 			null,
-			"Changes to allergen saved successfully.",
-			"Allergen Saved",
+			"Changes to dish attribute saved successfully.",
+			"Dish Attribute Saved",
 			MessageBoxButton.Ok,
 			MessageBoxImage.Information
 		);
@@ -209,8 +204,8 @@ public partial class AllergenEditViewModel : ViewModelBase
 		var userResponse = await _dialogService.ShowMessageBoxAsync
 		(
 			null,
-			"Are you sure you want to delete this allergen?",
-			"Delete Allergen",
+			"Are you sure you want to delete this dish attribute?",
+			"Delete Dish Attribute",
 			MessageBoxButton.YesNo,
 			MessageBoxImage.Warning
 		);
@@ -222,26 +217,26 @@ public partial class AllergenEditViewModel : ViewModelBase
 			return;
 		}
 
-		var deletedAllergen = await _context.Allergens.FindAsync(_id);
+		var deletedDishAttribute = await _context.DishAttributes.FindAsync(_id);
 
-		if (deletedAllergen is null) throw new InvalidOperationException("Allergen not found.");
+		if (deletedDishAttribute is null) throw new InvalidOperationException("Dish attribute not found.");
 
-		_context.Allergens.Remove(deletedAllergen);
+		_context.DishAttributes.Remove(deletedDishAttribute);
 		await _context.SaveChangesAsync();
 
 		_id = Guid.Empty;
-		DisplayId = null;
+		Name = null;
 		Description = null;
 
 		UpdateIsNewAndTitle();
 
-		_messenger.Send(AllergenDeletedMessage.CreateFromEntity(deletedAllergen));
+		_messenger.Send(DishAttributeDeletedMessage.CreateFromEntity(deletedDishAttribute));
 
 		_ = await _dialogService.ShowMessageBoxAsync
 		(
 			null,
-			"Allergen deleted successfully.",
-			"Delete Allergen",
+			"Dish attribute deleted successfully.",
+			"Delete Dish Attribute",
 			MessageBoxButton.Ok,
 			MessageBoxImage.Information
 		);
@@ -249,15 +244,15 @@ public partial class AllergenEditViewModel : ViewModelBase
 		IsProcessing = false;
 	}
 
-	private async Task<bool> ShowMessageIfDisplayIdAlreadyExists()
+	private async Task<bool> CheckAndShowMessageIfNameAlreadyExists()
 	{
-		if (!await _context.Allergens.AnyAsync(x => x.DisplayId == DisplayId)) return false;
+		if (!await _context.DishAttributes.AnyAsync(x => x.Name == Name)) return false;
 
 		_ = await _dialogService.ShowMessageBoxAsync
 		(
 			null,
-			$"Allergen with display id: \"{DisplayId}\" already exists.",
-			"Allergen Exists",
+			$"Dish attribute with name: \"{Name}\" already exists.",
+			"Dish Attribute Exists",
 			MessageBoxButton.Ok,
 			MessageBoxImage.Error
 		);

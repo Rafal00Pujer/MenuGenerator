@@ -2,16 +2,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:MenuGenerator.ViewModel.Allergen"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="MenuGenerator.ViewModel.Allergen.AllergenView"
-             x:DataType="vm:AllergenViewModel"
+             x:Class="MenuGenerator.ViewModel.DishAttribute.DishAttributeView"
+             xmlns:vm="clr-namespace:MenuGenerator.ViewModel.DishAttribute"
+             x:DataType="vm:DishAttributeViewModel"
              IsEnabled="{Binding !IsProcessing}">
 
     <!-- <Design.DataContext> -->
     <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-    <!-- <vm:AllergenDesignViewModel /> -->
+    <!-- <vm:DishAttributeDesignViewModel /> -->
     <!-- </Design.DataContext> -->
 
     <SplitView IsPaneOpen="True"
@@ -34,14 +34,14 @@
                 <Button x:Name="AddNewBtn" Content="Add new" Margin="0,0,0,10"
                         Command="{Binding AddNewCommand}" />
 
-                <ScrollViewer x:Name="AllergensScroll" VerticalScrollBarVisibility="Visible">
-                    <ItemsControl ItemsSource="{Binding AllergenSummaries}">
+                <ScrollViewer x:Name="DishAttributesScroll" VerticalScrollBarVisibility="Visible">
+                    <ItemsControl ItemsSource="{Binding DishAttributeSummaries}">
 
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
 
                                 <Button Content="{Binding DisplayId}"
-                                        Command="{Binding $parent[vm:AllergenView].((vm:AllergenViewModel)DataContext).SelectCommand}"
+                                        Command="{Binding $parent[vm:DishAttributeView].((vm:DishAttributeViewModel)DataContext).SelectCommand}"
                                         CommandParameter="{Binding Id}" />
 
                             </DataTemplate>
@@ -53,7 +53,7 @@
         </SplitView.Pane>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-            <ContentControl Content="{Binding Allergen}" />
+            <ContentControl Content="{Binding DishAttribute}" />
         </ScrollViewer>
 
     </SplitView>

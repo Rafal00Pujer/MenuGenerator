@@ -5,12 +5,12 @@ namespace MenuGenerator.Models.Entities.OccurenceRule.DependsOn;
 
 public class DependsOnRuleEntityConfiguration : IEntityTypeConfiguration<DependsOnRuleEntity>
 {
-    public void Configure(EntityTypeBuilder<DependsOnRuleEntity> builder)
-    {
-        builder.HasBaseType<OccurenceRuleEntity>();
+	public void Configure(EntityTypeBuilder<DependsOnRuleEntity> builder)
+	{
+		builder.HasBaseType<OccurenceRuleEntity>();
 
-        builder
-            .HasMany(e => e.DependsOnDishList)
-            .WithMany();
-    }
+		builder
+			.HasMany(e => e.DependsOnDishList)
+			.WithMany();
+	}
 }

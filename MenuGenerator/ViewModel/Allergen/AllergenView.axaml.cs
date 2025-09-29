@@ -4,17 +4,17 @@ namespace MenuGenerator.ViewModel.Allergen;
 
 public partial class AllergenView : UserControl
 {
-    public AllergenView()
-    {
-        InitializeComponent();
+	public AllergenView()
+	{
+		InitializeComponent();
 
-        SizeChanged += OnSizeChanged;
-    }
+		SizeChanged += OnSizeChanged;
+	}
 
-    private void OnSizeChanged(object? sender, SizeChangedEventArgs args)
-    {
-        var addNewBtnSize = AddNewBtn.DesiredSize;
+	private void OnSizeChanged(object? sender, SizeChangedEventArgs args)
+	{
+		var addNewBtnSize = AddNewBtn.DesiredSize;
 
-        DishTypesScroll.Height = args.NewSize.Height - addNewBtnSize.Height;
-    }
+		AllergensScroll.Height = args.NewSize.Height - addNewBtnSize.Height;
+	}
 }

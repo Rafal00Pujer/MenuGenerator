@@ -6,8 +6,8 @@ namespace MenuGenerator.Models.Entities.OccurenceRule.CanOccurOnlyWith;
 
 public class CanOccurOnlyWithOneOfEntityConfiguration : IEntityTypeConfiguration<CanOccurOnlyWithOneOfEntity>
 {
-    public void Configure(EntityTypeBuilder<CanOccurOnlyWithOneOfEntity> builder)
-    {
-        builder.HasBaseType<DependsOnRuleEntity>();
-    }
+	public void Configure(EntityTypeBuilder<CanOccurOnlyWithOneOfEntity> builder)
+	{
+		builder.HasBaseType<DependsOnRuleEntity>();
+	}
 }

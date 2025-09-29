@@ -14,23 +14,23 @@ namespace MenuGenerator.Models.Database;
 
 public class MenuGeneratorContext(DbContextOptions<MenuGeneratorContext> options) : DbContext(options)
 {
-    public DbSet<AllergenEntity> Allergens { get; set; }
+	public DbSet<AllergenEntity> Allergens { get; set; }
 
-    public DbSet<DishEntity> Dishes { get; set; }
+	public DbSet<DishEntity> Dishes { get; set; }
 
-    public DbSet<DishTypeEntity> DishTypes { get; set; }
+	public DbSet<DishTypeEntity> DishTypes { get; set; }
 
-    public DbSet<DishAttributeEntity> DishAttributes { get; set; }
+	public DbSet<DishAttributeEntity> DishAttributes { get; set; }
 
-    public DbSet<MenuEntity> Menus { get; set; }
+	public DbSet<MenuEntity> Menus { get; set; }
 
-    public DbSet<OccurenceRuleEntity> OccurenceRules { get; set; }
+	public DbSet<OccurenceRuleEntity> OccurenceRules { get; set; }
 
-    public DbSet<CanOccurAfterDaysEntity> CanOccurAfterDaysRules { get; set; }
+	public DbSet<CanOccurAfterDaysEntity> CanOccurAfterDaysRules { get; set; }
 
-    public DbSet<DependsOnRuleEntity> DependsOnRules { get; set; }
+	public DbSet<DependsOnRuleEntity> DependsOnRules { get; set; }
 
-    public DbSet<CanNotOccurWithEntity> CanNotOccurWithRules { get; set; }
+	public DbSet<CanNotOccurWithEntity> CanNotOccurWithRules { get; set; }
 
-    public DbSet<CanOccurOnlyWithOneOfEntity> CanOccurOnlyWithRules { get; set; }
+	public DbSet<CanOccurOnlyWithOneOfEntity> CanOccurOnlyWithRules { get; set; }
 }

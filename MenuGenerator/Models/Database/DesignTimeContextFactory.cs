@@ -5,12 +5,13 @@ namespace MenuGenerator.Models.Database;
 
 public class DesignTimeContextFactory : IDesignTimeDbContextFactory<MenuGeneratorContext>
 {
-    public MenuGeneratorContext CreateDbContext(string[] args)
-    {
-        var optionsBuilder = new DbContextOptionsBuilder<MenuGeneratorContext>();
-        optionsBuilder.UseSqlite("Data Source=Models/Database/DevDbFiles/MenuGenerator.db");
-        // ../../../Models/Database/DevDbFiles/
+	public MenuGeneratorContext CreateDbContext(string[] args)
+	{
+		var optionsBuilder = new DbContextOptionsBuilder<MenuGeneratorContext>();
+		optionsBuilder.UseSqlite("Data Source=Models/Database/DevDbFiles/MenuGenerator.db");
 
-        return new MenuGeneratorContext(optionsBuilder.Options);
-    }
+		// ../../../Models/Database/DevDbFiles/
+
+		return new MenuGeneratorContext(optionsBuilder.Options);
+	}
 }

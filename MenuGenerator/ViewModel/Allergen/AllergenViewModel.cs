@@ -14,170 +14,171 @@ namespace MenuGenerator.ViewModel.Allergen;
 
 [View(typeof(AllergenView))]
 public partial class AllergenViewModel :
-    ViewModelBase,
-    IRecipient<AllergenAddedMessage>,
-    IRecipient<AllergenEditedMessage>,
-    IRecipient<AllergenDeletedMessage>,
-    IMainPage,
-    IDisposable
+	ViewModelBase,
+	IRecipient<AllergenAddedMessage>,
+	IRecipient<AllergenEditedMessage>,
+	IRecipient<AllergenDeletedMessage>,
+	IMainPage,
+	IDisposable
 {
-    private readonly MenuGeneratorContext _context;
-    private readonly IMessenger _messenger;
-    private readonly IServiceScope _serviceScope;
+	private readonly MenuGeneratorContext _context;
+	private readonly IMessenger _messenger;
+	private readonly IServiceScope _serviceScope;
 
-    [ObservableProperty] private AllergenEditViewModel _allergen;
+	[ObservableProperty]
+	private AllergenEditViewModel _allergen;
 
-    [ObservableProperty] private ObservableCollection<AllergenSummary> _allergenSummaries = [];
+	[ObservableProperty]
+	private ObservableCollection<AllergenSummary> _allergenSummaries = [];
 
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(AddNewCommand))]
-    [NotifyCanExecuteChangedFor(nameof(SelectCommand))]
-    private bool _isProcessing;
+	[ObservableProperty]
+	[NotifyCanExecuteChangedFor(nameof(AddNewCommand))]
+	[NotifyCanExecuteChangedFor(nameof(SelectCommand))]
+	private bool _isProcessing;
 
-    private int _isProcessingCounter;
+	private int _isProcessingCounter;
 
-    public AllergenViewModel(MenuGeneratorContext context, IMessenger messenger,
-        IServiceScopeFactory serviceScopeFactory)
-    {
-        _context = context;
-        _messenger = messenger;
-        _serviceScope = serviceScopeFactory.CreateScope();
+	public AllergenViewModel
+	(
+		MenuGeneratorContext context, IMessenger messenger,
+		IServiceScopeFactory serviceScopeFactory
+	)
+	{
+		_context = context;
+		_messenger = messenger;
+		_serviceScope = serviceScopeFactory.CreateScope();
 
-        _messenger.RegisterAll(this);
+		_messenger.RegisterAll(this);
 
-        Allergen = _serviceScope.ServiceProvider.GetRequiredService<AllergenEditViewModel>();
-        Allergen.PropertyChanged += OnAllergenPropertyChanged;
-    }
+		Allergen = _serviceScope.ServiceProvider.GetRequiredService<AllergenEditViewModel>();
+		Allergen.PropertyChanged += OnAllergenPropertyChanged;
+	}
 
-    public void Dispose()
-    {
-        _messenger.UnregisterAll(this);
+	public void Dispose()
+	{
+		_messenger.UnregisterAll(this);
 
-        Allergen.PropertyChanged -= OnAllergenPropertyChanged;
+		Allergen.PropertyChanged -= OnAllergenPropertyChanged;
 
-        _serviceScope.Dispose();
+		_serviceScope.Dispose();
 
-        GC.SuppressFinalize(this);
-    }
+		GC.SuppressFinalize(this);
+	}
 
-    public async Task LoadAsync()
-    {
-        IncrementIsProcessingCounter();
+	public async Task LoadAsync()
+	{
+		IncrementIsProcessingCounter();
 
-        AllergenSummaries.Clear();
+		AllergenSummaries.Clear();
 
-        await foreach (var allergen in _context.Allergens)
-        {
-            var summary = new AllergenSummary(allergen.Id, allergen.DisplayId);
-            AllergenSummaries.Add(summary);
-        }
+		await foreach (var allergen in _context.Allergens)
+		{
+			var summary = new AllergenSummary(allergen.Id, allergen.DisplayId);
+			AllergenSummaries.Add(summary);
+		}
 
-        DecrementIsProcessingCounter();
-    }
+		DecrementIsProcessingCounter();
+	}
 
-    public void Receive(AllergenAddedMessage message)
-    {
-        var addedAllergenSummary = new AllergenSummary(message.Id, message.DisplayId);
+	public void Receive(AllergenAddedMessage message)
+	{
+		var addedAllergenSummary = new AllergenSummary(message.Id, message.DisplayId);
 
-        AllergenSummaries.Add(addedAllergenSummary);
-    }
+		AllergenSummaries.Add(addedAllergenSummary);
+	}
 
-    public void Receive(AllergenDeletedMessage message)
-    {
-        var deletedAllergenSummary = AllergenSummaries.FirstOrDefault(x => x.Id == message.Id);
+	public void Receive(AllergenDeletedMessage message)
+	{
+		var deletedAllergenSummary = AllergenSummaries.FirstOrDefault(x => x.Id == message.Id);
 
-        if (deletedAllergenSummary is null) throw new InvalidOperationException("Allergen not found!");
+		if (deletedAllergenSummary is null) throw new InvalidOperationException("Allergen not found!");
 
-        AllergenSummaries.Remove(deletedAllergenSummary);
-    }
+		AllergenSummaries.Remove(deletedAllergenSummary);
+	}
 
-    public void Receive(AllergenEditedMessage message)
-    {
-        var editedAllergenSummary = AllergenSummaries.FirstOrDefault(x => x.Id == message.Id);
+	public void Receive(AllergenEditedMessage message)
+	{
+		var editedAllergenSummary = AllergenSummaries.FirstOrDefault(x => x.Id == message.Id);
 
-        if (editedAllergenSummary is null) throw new InvalidOperationException("Allergen not found!");
+		if (editedAllergenSummary is null) throw new InvalidOperationException("Allergen not found!");
 
-        var editedDishTypeSummaryIndex = AllergenSummaries.IndexOf(editedAllergenSummary);
-        AllergenSummaries.Remove(editedAllergenSummary);
+		var editedDishTypeSummaryIndex = AllergenSummaries.IndexOf(editedAllergenSummary);
+		AllergenSummaries.Remove(editedAllergenSummary);
 
-        editedAllergenSummary = editedAllergenSummary with
-        {
-            DisplayId = message.DisplayId
-        };
+		editedAllergenSummary = editedAllergenSummary with
+		{
+			DisplayId = message.DisplayId
+		};
 
-        AllergenSummaries.Add(editedAllergenSummary);
-        AllergenSummaries.Move(AllergenSummaries.Count - 1, editedDishTypeSummaryIndex);
-    }
+		AllergenSummaries.Add(editedAllergenSummary);
+		AllergenSummaries.Move(AllergenSummaries.Count - 1, editedDishTypeSummaryIndex);
+	}
 
-    private bool CanAddNew()
-    {
-        return !IsProcessing;
-    }
+	private bool CanAddNew() => !IsProcessing;
 
-    [RelayCommand(CanExecute = nameof(CanAddNew))]
-    private void AddNew()
-    {
-        Allergen.Clear();
-    }
+	[RelayCommand(CanExecute = nameof(CanAddNew))]
+	private void AddNew()
+	{
+		Allergen.Clear();
+	}
 
-    private bool CanSelect()
-    {
-        return !IsProcessing;
-    }
+	private bool CanSelect() => !IsProcessing;
 
-    [RelayCommand(CanExecute = nameof(CanSelect))]
-    private async Task Select(Guid id)
-    {
-        IncrementIsProcessingCounter();
+	[RelayCommand(CanExecute = nameof(CanSelect))]
+	private async Task Select(Guid id)
+	{
+		IncrementIsProcessingCounter();
 
-        await Allergen.LoadAsync(id);
+		await Allergen.LoadAsync(id);
 
-        DecrementIsProcessingCounter();
-    }
+		DecrementIsProcessingCounter();
+	}
 
-    private void OnAllergenPropertyChanged(object? sender, PropertyChangedEventArgs args)
-    {
-        if (args.PropertyName != nameof(AllergenEditViewModel.IsProcessing)
-            || sender is not AllergenEditViewModel allergen) return;
+	private void OnAllergenPropertyChanged(object? sender, PropertyChangedEventArgs args)
+	{
+		if (args.PropertyName != nameof(AllergenEditViewModel.IsProcessing)
+			|| sender is not AllergenEditViewModel allergen)
+			return;
 
-        if (allergen.IsProcessing)
-        {
-            IncrementIsProcessingCounter();
-            return;
-        }
+		if (allergen.IsProcessing)
+		{
+			IncrementIsProcessingCounter();
 
-        DecrementIsProcessingCounter();
-    }
+			return;
+		}
 
-    private void IncrementIsProcessingCounter()
-    {
-        _isProcessingCounter++;
-        RecalculateIsProcessing();
-    }
+		DecrementIsProcessingCounter();
+	}
 
-    private void DecrementIsProcessingCounter()
-    {
-        if (_isProcessingCounter <= 0)
-            throw new InvalidOperationException($"{nameof(_isProcessingCounter)} can not be negative!");
+	private void IncrementIsProcessingCounter()
+	{
+		_isProcessingCounter++;
+		RecalculateIsProcessing();
+	}
 
-        _isProcessingCounter--;
-        RecalculateIsProcessing();
-    }
+	private void DecrementIsProcessingCounter()
+	{
+		if (_isProcessingCounter <= 0)
+			throw new InvalidOperationException($"{nameof(_isProcessingCounter)} can not be negative!");
 
-    private void RecalculateIsProcessing()
-    {
-        switch (_isProcessingCounter)
-        {
-            case < 0:
-                throw new InvalidOperationException($"{nameof(_isProcessingCounter)} is negative!");
-            case > 0:
-                IsProcessing = true;
-                return;
-            default:
-                IsProcessing = false;
-                break;
-        }
-    }
+		_isProcessingCounter--;
+		RecalculateIsProcessing();
+	}
 
-    public record AllergenSummary(Guid Id, string DisplayId);
+	private void RecalculateIsProcessing()
+	{
+		switch (_isProcessingCounter)
+		{
+			case < 0: throw new InvalidOperationException($"{nameof(_isProcessingCounter)} is negative!");
+
+			case > 0:
+				IsProcessing = true;
+
+				return;
+
+			default: IsProcessing = false; break;
+		}
+	}
+
+	public record AllergenSummary(Guid Id, string DisplayId);
 }

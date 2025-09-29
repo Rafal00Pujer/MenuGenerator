@@ -5,23 +5,23 @@ namespace MenuGenerator.Models.Entities.Allergen;
 
 public class AllergenEntityConfiguration : IEntityTypeConfiguration<AllergenEntity>
 {
-    public void Configure(EntityTypeBuilder<AllergenEntity> builder)
-    {
-        builder.HasKey(e => e.Id);
+	public void Configure(EntityTypeBuilder<AllergenEntity> builder)
+	{
+		builder.HasKey(e => e.Id);
 
-        builder
-            .HasIndex(e => e.DisplayId)
-            .IsUnique();
+		builder
+			.HasIndex(e => e.DisplayId)
+			.IsUnique();
 
-        builder
-            .Property(e => e.DisplayId)
-            .HasMaxLength(10)
-            .HasSentinel(string.Empty)
-            .IsRequired();
+		builder
+			.Property(e => e.DisplayId)
+			.HasMaxLength(10)
+			.HasSentinel(string.Empty)
+			.IsRequired();
 
-        builder
-            .Property(e => e.Description)
-            .HasMaxLength(50)
-            .IsRequired(false);
-    }
+		builder
+			.Property(e => e.Description)
+			.HasMaxLength(50)
+			.IsRequired(false);
+	}
 }

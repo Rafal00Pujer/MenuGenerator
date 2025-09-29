@@ -12,23 +12,23 @@ namespace MenuGenerator.Models.Entities.Dish;
 [EntityTypeConfiguration<DishEntityConfiguration, DishEntity>]
 public class DishEntity
 {
-    public required Guid Id { get; set; } = Guid.CreateVersion7();
+	public required Guid Id { get; set; } = Guid.CreateVersion7();
 
-    public required string Name { get; set; } = null!;
+	public required string Name { get; set; } = null!;
 
-    public string? Description { get; set; }
+	public string? Description { get; set; }
 
-    public required bool IncludeInNewMenus { get; set; }
+	public required bool IncludeInNewMenus { get; set; }
 
-    public required Guid TypeId { get; set; }
+	public required Guid TypeId { get; set; }
 
-    public required DishTypeEntity Type { get; set; } = null!;
+	public required DishTypeEntity Type { get; set; } = null!;
 
-    public List<DishAttributeEntity> AttributeList { get; set; } = [];
+	public List<DishAttributeEntity> AttributeList { get; set; } = [];
 
-    public List<AllergenEntity> AllergenList { get; set; } = [];
+	public List<AllergenEntity> AllergenList { get; set; } = [];
 
-    public List<MenuEntity> MenuList { get; set; } = [];
+	public List<MenuEntity> MenuList { get; set; } = [];
 
-    public List<OccurenceRuleEntity> OccurenceRuleList { get; set; } = [];
+	public List<OccurenceRuleEntity> OccurenceRuleList { get; set; } = [];
 }

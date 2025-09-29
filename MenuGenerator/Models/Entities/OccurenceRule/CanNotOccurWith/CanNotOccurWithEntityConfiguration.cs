@@ -6,8 +6,8 @@ namespace MenuGenerator.Models.Entities.OccurenceRule.CanNotOccurWith;
 
 public class CanNotOccurWithEntityConfiguration : IEntityTypeConfiguration<CanNotOccurWithEntity>
 {
-    public void Configure(EntityTypeBuilder<CanNotOccurWithEntity> builder)
-    {
-        builder.HasBaseType<DependsOnRuleEntity>();
-    }
+	public void Configure(EntityTypeBuilder<CanNotOccurWithEntity> builder)
+	{
+		builder.HasBaseType<DependsOnRuleEntity>();
+	}
 }

@@ -9,15 +9,20 @@ namespace MenuGenerator.Models.Entities.OccurenceRule.CanNotOccurWith;
 [EntityTypeConfiguration(typeof(CanNotOccurWithEntityConfiguration))]
 public class CanNotOccurWithEntity : DependsOnRuleEntity
 {
-    public override bool IsSatisfied(
-        IEnumerable<MenuEntity> previousMonthMenus,
-        IEnumerable<MenuEntity> proposedMenus,
-        MenuEntity currentGeneratedMenu)
-    {
-        return !currentGeneratedMenu.DishList
-            .Select(x => x.Id)
-            .Intersect(DependsOnDishList
-                .Select(x => x.Id))
-            .Any();
-    }
+	public override bool IsSatisfied
+	(
+		IEnumerable<MenuEntity> previousMonthMenus,
+		IEnumerable<MenuEntity> proposedMenus,
+		MenuEntity currentGeneratedMenu
+	)
+	{
+		return !currentGeneratedMenu.DishList
+									.Select(x => x.Id)
+									.Intersect
+									(
+										DependsOnDishList
+											.Select(x => x.Id)
+									)
+									.Any();
+	}
 }

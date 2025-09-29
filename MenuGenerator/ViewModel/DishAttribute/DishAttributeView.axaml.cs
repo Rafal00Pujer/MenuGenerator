@@ -1,10 +1,10 @@
 using Avalonia.Controls;
 
-namespace MenuGenerator.ViewModel.DishType;
+namespace MenuGenerator.ViewModel.DishAttribute;
 
-public partial class DishTypeView : UserControl
+public partial class DishAttributeView : UserControl
 {
-	public DishTypeView()
+	public DishAttributeView()
 	{
 		InitializeComponent();
 
@@ -15,6 +15,6 @@ public partial class DishTypeView : UserControl
 	{
 		var addNewBtnSize = AddNewBtn.DesiredSize;
 
-		DishTypesScroll.Height = args.NewSize.Height - addNewBtnSize.Height;
+		DishAttributesScroll.Height = args.NewSize.Height - addNewBtnSize.Height;
 	}
 }

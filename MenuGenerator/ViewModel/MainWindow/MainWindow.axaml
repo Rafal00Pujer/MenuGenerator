@@ -9,11 +9,11 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="MenuGenerator">
 
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
+    <!-- <Design.DataContext> -->
+    <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <mainWindow:MainWindowViewModel />
-    </Design.DataContext>
+    <!-- <mainWindow:MainWindowDesignViewModel /> -->
+    <!-- </Design.DataContext> -->
 
     <Grid RowDefinitions="Auto, *">
 
@@ -33,8 +33,7 @@
 
         </TabStrip>
 
-        <TransitioningContentControl Grid.Row="1" Content="{Binding CurrentMainPage}"
-                                     IsEnabled="{Binding !CurrentMainPage.IsProcessing}" />
+        <TransitioningContentControl Grid.Row="1" Content="{Binding CurrentMainPage}" />
 
     </Grid>
 
