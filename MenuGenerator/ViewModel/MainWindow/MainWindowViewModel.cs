@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MenuGenerator.ViewLocator;
+using MenuGenerator.ViewModel.Allergen;
 using MenuGenerator.ViewModel.DishType;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,7 +15,10 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    [ObservableProperty] private IMainPage _currentMainPage = null!;
+#pragma warning disable CS0657 // Not a valid attribute location for this declaration
+    [MaybeNull] [property: MaybeNull] [ObservableProperty]
+#pragma warning restore CS0657 // Not a valid attribute location for this declaration
+    private IMainPage _currentMainPage = null!;
 
     [MaybeNull] private IServiceScope _currentMainPageScope;
 
@@ -32,9 +36,9 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         //new ("Menu History", typeof(object)),
         //new ("Menu Templates", typeof(object)),
         //new ("Dishes", typeof(object)),
-        new("Dish Types", typeof(DishTypeViewModel))
+        new("Dish Types", typeof(DishTypeViewModel)),
         //new ("Dishes Attributes", typeof(object)),
-        //new ("Allergens", typeof(object)),
+        new("Allergens", typeof(AllergenViewModel))
         //new ("Occurence Rules", typeof(object))
     ];
 
@@ -47,6 +51,9 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
 
     partial void OnSelectedTabChanged(Tab value)
     {
+        // don't change the page if it is processing something
+        if (CurrentMainPage is not null && CurrentMainPage.IsProcessing) return;
+
         _currentMainPageScope?.Dispose();
         _currentMainPageScope = _serviceScopeFactory.CreateScope();
 

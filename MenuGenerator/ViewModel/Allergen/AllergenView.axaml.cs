@@ -1,10 +1,10 @@
 using Avalonia.Controls;
 
-namespace MenuGenerator.ViewModel.DishType;
+namespace MenuGenerator.ViewModel.Allergen;
 
-public partial class DishTypeView : UserControl
+public partial class AllergenView : UserControl
 {
-    public DishTypeView()
+    public AllergenView()
     {
         InitializeComponent();
 

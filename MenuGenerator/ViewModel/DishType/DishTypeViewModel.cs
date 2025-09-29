@@ -46,7 +46,7 @@ public partial class DishTypeViewModel :
         _messenger.RegisterAll(this);
 
         DishType = _serviceScope.ServiceProvider.GetRequiredService<DishTypeEditViewModel>();
-        DishType.PropertyChanged += OnSelectedDishTypeOnPropertyChanged;
+        DishType.PropertyChanged += OnDishTypePropertyChanged;
     }
 
     /// <summary>
@@ -66,7 +66,7 @@ public partial class DishTypeViewModel :
 
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         // Just in case that design view model didn't set dish type
-        if (DishType is not null) DishType.PropertyChanged -= OnSelectedDishTypeOnPropertyChanged;
+        if (DishType is not null) DishType.PropertyChanged -= OnDishTypePropertyChanged;
 
         _serviceScope.Dispose();
 
@@ -130,11 +130,7 @@ public partial class DishTypeViewModel :
     [RelayCommand(CanExecute = nameof(CanAddNew))]
     private void AddNew()
     {
-        IncrementIsProcessingCounter();
-
         DishType.Clear();
-
-        DecrementIsProcessingCounter();
     }
 
     private bool CanSelect()
@@ -152,7 +148,7 @@ public partial class DishTypeViewModel :
         DecrementIsProcessingCounter();
     }
 
-    private void OnSelectedDishTypeOnPropertyChanged(object? sender, PropertyChangedEventArgs args)
+    private void OnDishTypePropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
         if (args.PropertyName != nameof(DishTypeEditViewModel.IsProcessing)) return;
 
@@ -173,7 +169,8 @@ public partial class DishTypeViewModel :
 
     private void DecrementIsProcessingCounter()
     {
-        if (_isProcessingCounter <= 0) throw new InvalidOperationException("_isProcessingCounter can not be negative!");
+        if (_isProcessingCounter <= 0)
+            throw new InvalidOperationException($"{nameof(_isProcessingCounter)} can not be negative!");
 
         _isProcessingCounter--;
         RecalculateIsProcessing();
@@ -184,7 +181,7 @@ public partial class DishTypeViewModel :
         switch (_isProcessingCounter)
         {
             case < 0:
-                throw new InvalidOperationException("_isProcessingCounter is negative!");
+                throw new InvalidOperationException($"{nameof(_isProcessingCounter)} is negative!");
             case > 0:
                 IsProcessing = true;
                 return;

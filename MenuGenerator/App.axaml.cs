@@ -7,8 +7,8 @@ using Avalonia.Markup.Xaml;
 using CommunityToolkit.Mvvm.Messaging;
 using HanumanInstitute.MvvmDialogs;
 using HanumanInstitute.MvvmDialogs.Avalonia;
-using HanumanInstitute.MvvmDialogs.Avalonia.MessageBox;
 using MenuGenerator.Models.Database;
+using MenuGenerator.ViewModel.Allergen;
 using MenuGenerator.ViewModel.DishType;
 using MenuGenerator.ViewModel.MainWindow;
 using Microsoft.EntityFrameworkCore;
@@ -79,25 +79,25 @@ public class App : Application
     {
         var collection = new ServiceCollection();
 
-        collection.AddSingleton<IConfiguration>(_configurationRoot);
-        collection.AddSingleton<MainWindowViewModel>();
-        collection.AddSingleton<IMessenger, WeakReferenceMessenger>();
-
-        collection.AddScoped<DishTypeEditViewModel>();
-        collection.AddScoped<DishTypeViewModel>();
-
-        collection.AddDbContext<MenuGeneratorContext>(options =>
-        {
-            options.UseSqlite($"Data Source={_configurationRoot.GetConnectionString("sqlitleDbFilePath")}");
-        });
-
-        collection.AddSingleton<IDialogService>(x => new DialogService(
-            new DialogManager(
-                new ViewLocatorBase(),
-                new DialogFactory()
-                    .AddMessageBox(MessageBoxMode.Popup)
-                    .AddDialogHost()),
-            x.GetService));
+        collection
+            .AddSingleton<IConfiguration>(_configurationRoot)
+            .AddSingleton<MainWindowViewModel>()
+            .AddSingleton<IMessenger, WeakReferenceMessenger>()
+            .AddScoped<DishTypeEditViewModel>()
+            .AddScoped<DishTypeViewModel>()
+            .AddScoped<AllergenEditViewModel>()
+            .AddScoped<AllergenViewModel>()
+            .AddDbContext<MenuGeneratorContext>(options =>
+            {
+                options.UseSqlite($"Data Source={_configurationRoot.GetConnectionString("sqlitleDbFilePath")}");
+            })
+            .AddSingleton<IDialogService>(x => new DialogService(
+                new DialogManager(
+                    new ViewLocatorBase(),
+                    new DialogFactory()
+                        .AddMessageBox()
+                        .AddDialogHost()),
+                x.GetService));
 
         collection.MakeReadOnly();
         return collection.BuildServiceProvider(new ServiceProviderOptions
