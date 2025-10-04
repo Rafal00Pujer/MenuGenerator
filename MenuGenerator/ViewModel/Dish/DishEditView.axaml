@@ -1,0 +1,175 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MenuGenerator.ViewModel.Dish.DishEditView"
+             xmlns:vm="clr-namespace:MenuGenerator.ViewModel.Dish"
+             x:DataType="vm:DishEditViewModel"
+             xmlns:controls="clr-namespace:MenuGenerator.Controls"
+             IsEnabled="{Binding !IsProcessing}">
+
+    <Design.DataContext>
+        <vm:DishEditDesignViewModel />
+    </Design.DataContext>
+
+    <StackPanel Orientation="Vertical">
+        <TextBlock TextAlignment="Center" FontSize="25" Text="{Binding Title}"
+                   Margin="0,15" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+
+            <StackPanel Orientation="Vertical" Margin="10,0,10,0">
+                <!-- Name -->
+                <Label Content="Name" Target="NameBox" Margin="0,0,0,5" />
+                <controls:TestBoxWithTrim Name="NameBox" Text="{Binding Name}"
+                                          Width="200" />
+
+                <!-- Include in new menus -->
+                <CheckBox IsThreeState="False" IsChecked="{Binding IncludeInNewMenus}"
+                          Margin="0,5,0,0">
+                    Include in new menus
+                </CheckBox>
+            </StackPanel>
+
+            <!-- Description -->
+            <StackPanel Orientation="Vertical" Margin="10,0,10,0">
+                <Label Content="Description" Target="DescriptionBox" Margin="0,0,0,5" />
+                <controls:TestBoxWithTrim Name="DescriptionBox" Text="{Binding Description}"
+                                          Height="100" Width="300" AcceptsReturn="True" TextWrapping="Wrap" />
+            </StackPanel>
+
+        </StackPanel>
+
+        <!-- Combo boxes -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15,0,0">
+
+            <!-- dish type -->
+            <ComboBox ItemsSource="{Binding Types}"
+                      SelectedItem="{Binding SelectedDishType}"
+                      PlaceholderText="Select dish type" Width="200" MaxDropDownHeight="150"
+                      AutoScrollToSelectedItem="True"
+                      Margin="5,0">
+
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+
+                        <TextBlock Text="{Binding Name}" />
+
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+
+            </ComboBox>
+
+            <!-- dish allergens -->
+            <Expander VerticalAlignment="Top" Width="225"
+                      Margin="5,0" x:Name="AllergensExpander">
+
+                <Expander.Header>
+                    <StackPanel Orientation="Vertical" Margin="0,5">
+
+                        <TextBlock Margin="0,0,0,5">
+                            <Run Text="Selected allergens: " />
+                            <Run Text="{Binding SelectedAllergens.Count}" />
+                        </TextBlock>
+
+                        <Button Content="Clear" Command="{Binding ClearSelectedAllergensCommand}" />
+
+                    </StackPanel>
+                </Expander.Header>
+
+                <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled"
+                              Width="200" Height="150">
+
+                    <StackPanel Orientation="Vertical">
+
+                        <Border BorderBrush="{StaticResource SystemControlForegroundAccentBrush}"
+                                BorderThickness="0,0,0,2" Margin="10" Padding="5">
+                            <TextBlock TextAlignment="Left" TextWrapping="WrapWithOverflow"
+                                       Text="Tip: Select with CTR key to select multiple" />
+                        </Border>
+
+                        <ListBox SelectionMode="Multiple" ItemsSource="{Binding Allergens}"
+                                 SelectedItems="{Binding SelectedAllergens}">
+
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+
+                                    <TextBlock Text="{Binding DisplayId}" />
+
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+
+                        </ListBox>
+                    </StackPanel>
+
+                </ScrollViewer>
+
+            </Expander>
+
+            <!-- dish attributes -->
+            <Expander VerticalAlignment="Top" Width="225"
+                      Margin="5,0" x:Name="AttributesExpander">
+
+                <Expander.Header>
+                    <StackPanel Orientation="Vertical" Margin="0,5">
+
+                        <TextBlock Margin="0,0,0,5">
+                            <Run Text="Selected attributes: " />
+                            <Run Text="{Binding SelectedAttributes.Count}" />
+                        </TextBlock>
+
+                        <Button Content="Clear" Command="{Binding ClearSelectedAttributesCommand}" />
+
+                    </StackPanel>
+                </Expander.Header>
+
+                <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled"
+                              Width="200" Height="150">
+
+                    <StackPanel Orientation="Vertical">
+
+                        <Border BorderBrush="{StaticResource SystemControlForegroundAccentBrush}"
+                                BorderThickness="0,0,0,2" Margin="10" Padding="5">
+                            <TextBlock TextAlignment="Left" TextWrapping="WrapWithOverflow"
+                                       Text="Tip: Select with CTR key to select multiple" />
+                        </Border>
+
+                        <ListBox SelectionMode="Multiple" ItemsSource="{Binding Attributes}"
+                                 SelectedItems="{Binding SelectedAttributes}">
+
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+
+                                    <TextBlock Text="{Binding Name}" />
+
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+
+                        </ListBox>
+                    </StackPanel>
+
+                </ScrollViewer>
+
+            </Expander>
+
+        </StackPanel>
+
+        <!-- Buttons -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="15,15">
+            <Button Content="Add New" Margin="5,0"
+                    IsVisible="{Binding IsNew}" Command="{Binding AddCommand}" />
+
+            <Button Content="Cancel" Margin="5,0"
+                    IsVisible="{Binding !IsNew}" Command="{Binding CancelCommand}" />
+
+            <Button Content="Save" Margin="5,0"
+                    IsVisible="{Binding !IsNew}" Command="{Binding SaveCommand}" />
+
+            <Button Content="Delete" Margin="15,0"
+                    IsVisible="{Binding !IsNew}" Command="{Binding DeleteCommand}" />
+        </StackPanel>
+
+    </StackPanel>
+
+</UserControl>

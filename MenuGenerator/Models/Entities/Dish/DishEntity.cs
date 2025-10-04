@@ -22,7 +22,7 @@ public class DishEntity
 
 	public required Guid TypeId { get; set; }
 
-	public required DishTypeEntity Type { get; set; } = null!;
+	public DishTypeEntity Type { get; set; } = null!;
 
 	public List<DishAttributeEntity> AttributeList { get; set; } = [];
 

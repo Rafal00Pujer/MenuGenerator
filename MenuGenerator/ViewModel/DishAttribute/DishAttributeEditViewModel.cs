@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -220,6 +221,22 @@ public partial class DishAttributeEditViewModel : ViewModelBase
 		var deletedDishAttribute = await _context.DishAttributes.FindAsync(_id);
 
 		if (deletedDishAttribute is null) throw new InvalidOperationException("Dish attribute not found.");
+
+		if (await _context.DishAttributes.AnyAsync(x => x.DishList.Any()))
+		{
+			_ = await _dialogService.ShowMessageBoxAsync
+			(
+				null,
+				"Dish attribute is used by dishes.",
+				"Delete Dish Attribute",
+				MessageBoxButton.Ok,
+				MessageBoxImage.Error
+			);
+
+			IsProcessing = false;
+
+			return;
+		}
 
 		_context.DishAttributes.Remove(deletedDishAttribute);
 		await _context.SaveChangesAsync();

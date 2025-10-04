@@ -9,6 +9,7 @@ using HanumanInstitute.MvvmDialogs;
 using HanumanInstitute.MvvmDialogs.Avalonia;
 using MenuGenerator.Models.Database;
 using MenuGenerator.ViewModel.Allergen;
+using MenuGenerator.ViewModel.Dish;
 using MenuGenerator.ViewModel.DishAttribute;
 using MenuGenerator.ViewModel.DishType;
 using MenuGenerator.ViewModel.MainWindow;
@@ -33,7 +34,7 @@ public class App : Application
 		_configurationRoot = BuildConfiguration();
 		_serviceProviderRoot = BuildServiceProvider();
 
-		MigrateDatabase();
+		MigrateProdDatabase();
 
 		if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
 		{
@@ -53,7 +54,7 @@ public class App : Application
 	}
 
 	[Conditional("RELEASE")]
-	private void MigrateDatabase()
+	private void MigrateProdDatabase()
 	{
 		using var scope = _serviceProviderRoot.CreateScope();
 
@@ -89,12 +90,14 @@ public class App : Application
 				  .AddScoped<AllergenViewModel>()
 				  .AddScoped<DishAttributeEditViewModel>()
 				  .AddScoped<DishAttributeViewModel>()
+				  .AddScoped<DishEditViewModel>()
+				  .AddScoped<DishViewModel>()
 				  .AddDbContext<MenuGeneratorContext>
 				  (
 					  options =>
 					  {
 						  options.UseSqlite
-							  ($"Data Source={_configurationRoot.GetConnectionString("sqlitleDbFilePath")}");
+							  ($"Data Source={_configurationRoot.GetConnectionString("sqliteDbFilePath")}");
 					  }
 				  )
 				  .AddSingleton<IDialogService>

@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -225,6 +226,22 @@ public partial class AllergenEditViewModel : ViewModelBase
 		var deletedAllergen = await _context.Allergens.FindAsync(_id);
 
 		if (deletedAllergen is null) throw new InvalidOperationException("Allergen not found.");
+
+		if (await _context.Allergens.AnyAsync(x => x.DishList.Any()))
+		{
+			_ = await _dialogService.ShowMessageBoxAsync
+			(
+				null,
+				"Allergen is used by dishes.",
+				"Delete Allergen",
+				MessageBoxButton.Ok,
+				MessageBoxImage.Error
+			);
+
+			IsProcessing = false;
+
+			return;
+		}
 
 		_context.Allergens.Remove(deletedAllergen);
 		await _context.SaveChangesAsync();

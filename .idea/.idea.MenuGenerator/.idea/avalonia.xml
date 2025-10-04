@@ -8,6 +8,8 @@
         <entry key="MenuGenerator/Ui/MainWindow/MainWindow.axaml" value="MenuGenerator/MenuGenerator.csproj" />
         <entry key="MenuGenerator/ViewModel/Allergen/AllergenEditView.axaml" value="MenuGenerator/MenuGenerator.csproj" />
         <entry key="MenuGenerator/ViewModel/Allergen/AllergenView.axaml" value="MenuGenerator/MenuGenerator.csproj" />
+        <entry key="MenuGenerator/ViewModel/Dish/DishEditView.axaml" value="MenuGenerator/MenuGenerator.csproj" />
+        <entry key="MenuGenerator/ViewModel/Dish/DishView.axaml" value="MenuGenerator/MenuGenerator.csproj" />
         <entry key="MenuGenerator/ViewModel/DishAttribute/DishAttributeEditView.axaml" value="MenuGenerator/MenuGenerator.csproj" />
         <entry key="MenuGenerator/ViewModel/DishAttribute/DishAttributeView.axaml" value="MenuGenerator/MenuGenerator.csproj" />
         <entry key="MenuGenerator/ViewModel/DishType/DishEditView.axaml" value="MenuGenerator/MenuGenerator.csproj" />

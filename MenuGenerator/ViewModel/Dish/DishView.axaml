@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MenuGenerator.ViewModel.Dish.DishView"
+             xmlns:vm="clr-namespace:MenuGenerator.ViewModel.Dish"
+             x:DataType="vm:DishViewModel"
+             IsEnabled="{Binding !IsProcessing}">
+
+    <SplitView IsPaneOpen="True"
+               DisplayMode="CompactInline"
+               OpenPaneLength="150">
+
+        <SplitView.Pane>
+            <StackPanel Orientation="Vertical">
+
+                <StackPanel.Styles>
+                    <Style Selector="Button">
+
+                        <Setter Property="CornerRadius" Value="0" />
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+
+                    </Style>
+                </StackPanel.Styles>
+
+                <Button x:Name="AddNewBtn" Content="Add new" Margin="0,0,0,10"
+                        Command="{Binding AddNewCommand}" />
+
+                <ScrollViewer x:Name="AllergensScroll" VerticalScrollBarVisibility="Visible">
+                    <ItemsControl ItemsSource="{Binding DishSummaries}">
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+
+                                <Button Content="{Binding Name}"
+                                        Command="{Binding $parent[vm:DishView].((vm:DishViewModel)DataContext).SelectCommand}"
+                                        CommandParameter="{Binding Id}" />
+
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+            </StackPanel>
+        </SplitView.Pane>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <ContentControl Content="{Binding Dish}" />
+        </ScrollViewer>
+
+    </SplitView>
+
+</UserControl>

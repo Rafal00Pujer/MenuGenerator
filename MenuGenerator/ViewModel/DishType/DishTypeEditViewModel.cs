@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -224,6 +225,22 @@ public partial class DishTypeEditViewModel : ViewModelBase
 		var deletedDishType = await _context.DishTypes.FindAsync(Id);
 
 		if (deletedDishType is null) throw new InvalidOperationException("Dish type not found.");
+
+		if (await _context.DishTypes.AnyAsync(x => x.DishList.Any()))
+		{
+			_ = await _dialogService.ShowMessageBoxAsync
+			(
+				null,
+				"Dish type is used by dishes.",
+				"Delete Dish Type",
+				MessageBoxButton.Ok,
+				MessageBoxImage.Error
+			);
+
+			IsProcessing = false;
+
+			return;
+		}
 
 		_context.DishTypes.Remove(deletedDishType);
 		await _context.SaveChangesAsync();

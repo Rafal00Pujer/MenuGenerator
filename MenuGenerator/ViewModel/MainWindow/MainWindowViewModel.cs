@@ -5,6 +5,7 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MenuGenerator.ViewLocator;
 using MenuGenerator.ViewModel.Allergen;
+using MenuGenerator.ViewModel.Dish;
 using MenuGenerator.ViewModel.DishAttribute;
 using MenuGenerator.ViewModel.DishType;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,7 +41,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
 	[
 		//new ("Menu History", typeof(object)),
 		//new ("Menu Templates", typeof(object)),
-		//new ("Dishes", typeof(object)),
+		new("Dishes", typeof(DishViewModel)),
 		new("Dish Types", typeof(DishTypeViewModel)),
 		new("Dishes Attributes", typeof(DishAttributeViewModel)),
 		new("Allergens", typeof(AllergenViewModel))
