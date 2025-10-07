@@ -53,32 +53,6 @@ public class App : Application
 		}
 
 		base.OnFrameworkInitializationCompleted();
-
-		var firstTemplate = new DayTemplateEntity
-		{
-			Id = 1, TemplateDays = TemplateDayFlag.Tuesday | TemplateDayFlag.Friday, Order = 1, Name = "Tuesday, Friday"
-		};
-		
-		var secondTemplate = new DayTemplateEntity
-		{
-			Id = 2, TemplateDays = TemplateDayFlag.Monday | TemplateDayFlag.Tuesday | TemplateDayFlag.Wednesday, Order = 3, Name = "Monday, Tuesday, Wednesday"
-		};
-		
-		var thirdTemplate = new DayTemplateEntity
-		{
-			Id = 3, TemplateDays = TemplateDayFlag.Monday | TemplateDayFlag.Friday, Order = 2, Name = "Monday, Friday"
-		};
-
-		var menuTemplate = new MenuTemplateEntity
-		{
-			Id = Guid.Empty, Name = string.Empty
-		};
-
-		menuTemplate.TryAddDayTemplate(firstTemplate);
-		menuTemplate.TryAddDayTemplate(secondTemplate);
-		menuTemplate.TryAddDayTemplate(thirdTemplate);
-		
-		menuTemplate.ReorderDayTemplates();
 	}
 
 	[Conditional("RELEASE")]

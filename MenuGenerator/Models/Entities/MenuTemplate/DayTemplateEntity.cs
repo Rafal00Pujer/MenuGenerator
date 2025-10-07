@@ -11,15 +11,11 @@ public class DayTemplateEntity
 	
 	public required int Order { get; set; }
 
-	// TODO - Remove after testing
-	public required string Name { get; set; } = null!;
-
 	// TODO - Maybe move dish type and filter rule to a separate dependent type
 
-	// TODO - Uncomment after testing
-	//public required Guid DishTypeId { get; set; } = Guid.Empty;
+	public required Guid DishTypeId { get; set; } = Guid.Empty;
 
-	//public required DishTypeEntity DishType { get; set; } = null!;
+	public required DishTypeEntity DishType { get; set; } = null!;
 
 	// TODO - Add filter rule
 
