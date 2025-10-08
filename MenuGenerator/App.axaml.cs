@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using System.Linq;
 using Avalonia;
@@ -9,7 +8,6 @@ using CommunityToolkit.Mvvm.Messaging;
 using HanumanInstitute.MvvmDialogs;
 using HanumanInstitute.MvvmDialogs.Avalonia;
 using MenuGenerator.Models.Database;
-using MenuGenerator.Models.Entities.MenuTemplate;
 using MenuGenerator.ViewModel.Allergen;
 using MenuGenerator.ViewModel.Dish;
 using MenuGenerator.ViewModel.DishAttribute;

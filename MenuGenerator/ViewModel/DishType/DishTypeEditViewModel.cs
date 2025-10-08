@@ -242,6 +242,8 @@ public partial class DishTypeEditViewModel : ViewModelBase
 			return;
 		}
 
+		// TODO - check if day menu dish type are using this dish type
+
 		_context.DishTypes.Remove(deletedDishType);
 		await _context.SaveChangesAsync();
 

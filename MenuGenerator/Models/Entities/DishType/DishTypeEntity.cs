@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using MenuGenerator.Models.Entities.Dish;
+using MenuGenerator.Models.Entities.MenuTemplate;
 using Microsoft.EntityFrameworkCore;
 
 namespace MenuGenerator.Models.Entities.DishType;
@@ -15,4 +16,6 @@ public class DishTypeEntity
 	public string? Description { get; set; }
 
 	public List<DishEntity> DishList { get; set; } = [];
+
+	public List<DayMenuDishEntity> DayMenus { get; set; } = [];
 }
