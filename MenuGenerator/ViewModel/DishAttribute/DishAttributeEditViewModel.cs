@@ -238,6 +238,8 @@ public partial class DishAttributeEditViewModel : ViewModelBase
 			return;
 		}
 
+		//TODO - check if attribute is used by filters
+		
 		_context.DishAttributes.Remove(deletedDishAttribute);
 		await _context.SaveChangesAsync();
 

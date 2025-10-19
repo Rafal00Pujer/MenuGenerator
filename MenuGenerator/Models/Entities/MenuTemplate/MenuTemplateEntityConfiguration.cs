@@ -27,6 +27,10 @@ public class MenuTemplateEntityConfiguration : IEntityTypeConfiguration<MenuGene
 					}
 				);
 
+				x.Property(y => y.Order)
+				 .IsRequired()
+				 .ValueGeneratedNever();
+
 				x.HasOne(y => y.DayMenuTemplateEntity)
 				 .WithMany()
 				 .HasForeignKey(y => y.DayMenuTemplateId)

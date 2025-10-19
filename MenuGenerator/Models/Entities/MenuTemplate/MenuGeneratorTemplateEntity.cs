@@ -13,7 +13,7 @@ public class MenuGeneratorTemplateEntity
 	public const string DayTemplatesName = nameof(_dayTemplates);
 
 	private readonly SortedSet<OrderedDayMenuTemplateEntity> _dayTemplates = [];
-	
+
 	private DayTemplatesReadOnlyDictionaryWrapper? _dayTemplatesReadOnlyDictionary;
 
 	public required Guid Id { get; set; } = Guid.CreateVersion7();
@@ -25,31 +25,74 @@ public class MenuGeneratorTemplateEntity
 
 	public bool TryAddDayTemplate(int order, DayMenuTemplateEntity dayTemplateToAdd)
 	{
-		throw new NotImplementedException();
+		if (_dayTemplates.Any(x => x.DayMenuTemplateId == dayTemplateToAdd.Id))
+		{
+			return false;
+		}
+
+		return _dayTemplates.Add
+		(
+			new OrderedDayMenuTemplateEntity
+			{
+				MenuGeneratorTemplateId = Id,
+				Order = order,
+				DayMenuTemplateId = dayTemplateToAdd.Id,
+				DayMenuTemplateEntity = dayTemplateToAdd
+			}
+		);
 	}
 
 	public bool RemoveDayTemplate(DayMenuTemplateEntity dayTemplateToRemove)
 	{
-		throw new NotImplementedException();
+		var orderedDayMenuTemplateToRemove = _dayTemplates.FirstOrDefault
+			(x => x.DayMenuTemplateId == dayTemplateToRemove.Id);
+
+		return orderedDayMenuTemplateToRemove is not null && _dayTemplates.Remove(orderedDayMenuTemplateToRemove);
+	}
+
+	public bool UpdateDayTemplateOrder(int newOrder, DayMenuTemplateEntity dayTemplateToUpdate)
+	{
+		var orderedDayMenuTemplateToUpdate = _dayTemplates.FirstOrDefault
+			(x => x.DayMenuTemplateId == dayTemplateToUpdate.Id);
+
+		if (orderedDayMenuTemplateToUpdate is null)
+		{
+			return false;
+		}
+
+		if (orderedDayMenuTemplateToUpdate.Order == newOrder)
+		{
+			return true;
+		}
+
+		if (!_dayTemplates.Remove(orderedDayMenuTemplateToUpdate))
+		{
+			return false;
+		}
+
+		orderedDayMenuTemplateToUpdate.Order = newOrder;
+
+		return _dayTemplates.Add(orderedDayMenuTemplateToUpdate);
 	}
 
 	public void ClearDayTemplates() => _dayTemplates.Clear();
 
 	public void NormalizeDayTemplatesOrder()
 	{
-		throw new NotImplementedException();
+		var defensiveCopyArray = _dayTemplates.ToArray();
+		Array.Sort(defensiveCopyArray); // just to be sure that the order is correct
+		_dayTemplates.Clear();
 
-		// var valuesArray = _dayTemplates.Values.ToArray();
-		// _dayTemplates.Clear();
-		//
-		// for (var i = 0; i < valuesArray.Length; i++)
-		// {
-		// 	const int orderStep = 100_000;
-		//
-		// 	var normalizedOrder = orderStep * i;
-		//
-		// 	_dayTemplates.Add(normalizedOrder, valuesArray[i]);
-		// }
+		for (var i = 0; i < defensiveCopyArray.Length; i++)
+		{
+			const int orderStep = 100_000;
+
+			var normalizedOrder = orderStep * (i + 1);
+
+			defensiveCopyArray[i].Order = normalizedOrder;
+
+			_dayTemplates.Add(defensiveCopyArray[i]);
+		}
 	}
 
 	private class DayTemplatesReadOnlyDictionaryWrapper

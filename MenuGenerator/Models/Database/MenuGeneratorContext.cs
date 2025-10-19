@@ -19,6 +19,21 @@ public class MenuGeneratorContext(DbContextOptions<MenuGeneratorContext> options
 	public DbSet<DishAttributeEntity> DishAttributes { get; set; }
 
 	public DbSet<MenuGeneratorTemplateEntity> MenuGeneratorTemplates { get; set; }
-	
+
+	public DbSet<DayMenuTemplateEntity> DayMenuTemplates { get; set; }
+
+	public DbSet<DayMenuDishEntity> DayMenuDishes { get; set; }
+
+	// Filters
+	public DbSet<DishFilterEntity> DishFilters { get; set; }
+
 	public DbSet<DishFilterTrueEntity> DishFilterTrues { get; set; }
+
+	public DbSet<DishFilterHasAttributeEntity> DishFilterHasAttributes { get; set; }
+
+	public DbSet<DishFilterWithDependentsEntity> DishFilterWithDependents { get; set; }
+
+	public DbSet<DishFilterOrEntity> DishFilterOrs { get; set; }
+
+	public DbSet<DishFilterAndEntity> DishFilterAnds { get; set; }
 }

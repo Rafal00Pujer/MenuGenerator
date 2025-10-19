@@ -2,9 +2,11 @@ using System;
 using MenuGenerator.Models.Entities.Dish;
 using MenuGenerator.Models.Entities.DishType;
 using MenuGenerator.Models.Entities.MenuTemplate.Filters;
+using Microsoft.EntityFrameworkCore;
 
 namespace MenuGenerator.Models.Entities.MenuTemplate;
 
+[EntityTypeConfiguration<DayMenuDishEntityConfiguration, DayMenuDishEntity>]
 public class DayMenuDishEntity
 {
 	public required Guid Id { get; set; } = Guid.CreateVersion7();
